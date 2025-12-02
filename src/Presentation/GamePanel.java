@@ -41,15 +41,15 @@ public class GamePanel extends JPanel {
             // Intentar cargar cada imagen, si falla usaremos gráficos primitivos
             images.put("floor", loadImage("/images/levels/floor.png"));
             images.put("background", loadImage("/images/levels/background.png"));
-            images.put("wall", loadImage("/images/levels/wall.png"));
+            images.put("wall", loadImage("/images/blocks/wall.png"));
             images.put("ice", loadImage("/images/blocks/iceBlock.png"));
             images.put("iceBroken", loadImage("/images/blocks/iceBlockBroken.png"));
             images.put("grapes", loadImage("/images/fruits/grapes.png"));
             images.put("banana", loadImage("/images/fruits/banana.png"));
-            images.put("vanilla", loadImage("/images/characters/vanilla.png"));
+            images.put("vanilla", loadImage("/images/characters/vanilla/vanillaAnimated.png"));
             images.put("strawberry", loadImage("/images/characters/strawberry/strawberryAnimated.png"));
             images.put("chocolate", loadImage("/images/characters/chocolate/chocolateAnimated.png"));
-            images.put("troll", loadImage("/images/enemies/Troll/troll.png"));
+            images.put("troll", loadImage("/images/enemies/troll.png"));
             
             // Si llegamos aquí, todas las imágenes se cargaron
             useImages = true;
