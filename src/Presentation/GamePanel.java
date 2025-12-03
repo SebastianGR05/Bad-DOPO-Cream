@@ -12,7 +12,7 @@ import java.util.HashMap;
  */
 public class GamePanel extends JPanel {
     private Game game;
-    private final int CELL_SIZE = 40;
+    private final int CELL_SIZE = 20;
     
     // Mapa de imágenes cargadas
     private HashMap<String, Image> images;

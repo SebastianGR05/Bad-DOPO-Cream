@@ -12,7 +12,7 @@ public class Troll extends Enemy {
         super(x, y, "TROLL");
         this.direction = 0;
         this.stepCount = 0;
-        this.maxSteps = 4; // Cambia de dirección cada 4 pasos
+        this.maxSteps = 14; // Cambia de dirección cada 4 pasos
     }
     
     @Override
