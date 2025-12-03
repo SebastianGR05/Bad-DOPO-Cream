@@ -3,8 +3,6 @@ package Presentation;
 import Domain.*;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
 import javax.imageio.ImageIO;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,7 +16,7 @@ public class GamePanel extends JPanel {
     
     // Mapa de imágenes cargadas
     private HashMap<String, Image> images;
-    private boolean useImages = false; // Cambiar a true cuando tengas las imágenes
+    private boolean useImages = true;
     
     public GamePanel(Game game) {
         this.game = game;
@@ -28,7 +26,7 @@ public class GamePanel extends JPanel {
         ));
         setBackground(Color.BLACK);
         
-        // Intentar cargar imágenes
+        // Cargar imágenes
         images = new HashMap<>();
         loadImages();
     }
@@ -38,24 +36,35 @@ public class GamePanel extends JPanel {
      */
     private void loadImages() {
         try {
-            // Intentar cargar cada imagen, si falla usaremos gráficos primitivos
+            // Fondos y pisos
             images.put("floor", loadImage("/images/levels/floor.png"));
             images.put("background", loadImage("/images/levels/background.png"));
+            
+            // Bloques
             images.put("wall", loadImage("/images/blocks/wall.png"));
             images.put("ice", loadImage("/images/blocks/iceBlock.png"));
             images.put("iceBroken", loadImage("/images/blocks/iceBlockBroken.png"));
-            images.put("grapes", loadImage("/images/fruits/grapes.png"));
-            images.put("banana", loadImage("/images/fruits/banana.png"));
-            images.put("vanilla", loadImage("/images/characters/vanilla/vanillaAnimated.png"));
-            images.put("strawberry", loadImage("/images/characters/strawberry/strawberryAnimated.png"));
-            images.put("chocolate", loadImage("/images/characters/chocolate/chocolateAnimated.png"));
-            images.put("troll", loadImage("/images/enemies/troll.png"));
             
-            // Si llegamos aquí, todas las imágenes se cargaron
-            useImages = true;
-            System.out.println("Imágenes cargadas correctamente");
+            // Frutas
+            images.put("grape", loadImage("/images/fruits/grapes.png"));
+            images.put("banana", loadImage("/images/fruits/banana.png"));
+            images.put("pineapple", loadImage("/images/fruits/pineapple.png"));
+            images.put("cherry", loadImage("/images/fruits/cherry.png"));
+            
+            // Helados
+            images.put("vanilla", loadImage("/images/characters/vanillaAnimated.gif"));
+            images.put("strawberry", loadImage("/images/characters/strawberryAnimated.png"));
+            images.put("chocolate", loadImage("/images/characters/chocolateAnimated.png"));
+            
+            // Enemigos
+            images.put("troll", loadImage("/images/enemies/troll.gif"));
+            images.put("pot", loadImage("/images/enemies/pot.png"));
+            images.put("squid", loadImage("/images/enemies/orangeSquid.png"));
+            
+            System.out.println("Imágenes del GamePanel cargadas correctamente");
         } catch (Exception e) {
-            System.out.println("No se pudieron cargar las imágenes, usando gráficos simples");
+            System.out.println("Error al cargar algunas imágenes: " + e.getMessage());
+            System.out.println("Se usarán gráficos simples");
             useImages = false;
         }
     }
@@ -63,8 +72,17 @@ public class GamePanel extends JPanel {
     /**
      * Carga una imagen desde los recursos
      */
-    private Image loadImage(String path) throws IOException {
-        return ImageIO.read(getClass().getResourceAsStream(path));
+    private Image loadImage(String path) {
+        try {
+            Image img = ImageIO.read(getClass().getResourceAsStream(path));
+            if (img == null) {
+                System.out.println("No se pudo cargar: " + path);
+            }
+            return img;
+        } catch (Exception e) {
+            System.out.println("Error cargando: " + path + " - " + e.getMessage());
+            return null;
+        }
     }
     
     @Override
@@ -72,7 +90,7 @@ public class GamePanel extends JPanel {
         super.paintComponent(g);
         
         // Dibujar fondo si está disponible
-        if (useImages && images.containsKey("background")) {
+        if (useImages && images.containsKey("background") && images.get("background") != null) {
             g.drawImage(images.get("background"), 0, 0, getWidth(), getHeight(), this);
         }
         
@@ -101,7 +119,7 @@ public class GamePanel extends JPanel {
                 
                 if (cellType == 1) {
                     // Dibujar pared
-                    if (useImages && images.containsKey("wall")) {
+                    if (useImages && images.containsKey("wall") && images.get("wall") != null) {
                         g.drawImage(images.get("wall"), screenX, screenY, 
                                   CELL_SIZE, CELL_SIZE, this);
                     } else {
@@ -119,7 +137,7 @@ public class GamePanel extends JPanel {
                     }
                 } else {
                     // Dibujar piso
-                    if (useImages && images.containsKey("floor")) {
+                    if (useImages && images.containsKey("floor") && images.get("floor") != null) {
                         g.drawImage(images.get("floor"), screenX, screenY, 
                                   CELL_SIZE, CELL_SIZE, this);
                     } else {
@@ -145,7 +163,7 @@ public class GamePanel extends JPanel {
                 int x = block.getPosition().getX() * CELL_SIZE;
                 int y = block.getPosition().getY() * CELL_SIZE;
                 
-                if (useImages && images.containsKey("ice")) {
+                if (useImages && images.containsKey("ice") && images.get("ice") != null) {
                     g.drawImage(images.get("ice"), x, y, CELL_SIZE, CELL_SIZE, this);
                 } else {
                     // Gráfico simple de hielo
@@ -175,37 +193,60 @@ public class GamePanel extends JPanel {
                 int x = fruit.getPosition().getX() * CELL_SIZE;
                 int y = fruit.getPosition().getY() * CELL_SIZE;
                 
-                String fruitType = fruit.getType();
+                String fruitType = fruit.getType().toLowerCase();
                 
-                if (useImages && images.containsKey(fruitType.toLowerCase())) {
-                    Image img = images.get(fruitType.toLowerCase());
-                    // Centrar la fruta en la celda (asumiendo que la imagen es 30x30)
+                if (useImages && images.containsKey(fruitType) && images.get(fruitType) != null) {
+                    Image img = images.get(fruitType);
+                    // Centrar la fruta en la celda
                     g.drawImage(img, x + 5, y + 5, 30, 30, this);
                 } else {
                     // Gráficos simples según el tipo
-                    if (fruitType.equals("GRAPE")) {
-                        // Racimo de uvas (3 círculos)
-                        g.setColor(new Color(128, 0, 128)); // Morado
-                        g.fillOval(x + 10, y + 10, 20, 20);
-                        g.setColor(new Color(75, 0, 130)); // Morado oscuro
-                        g.drawOval(x + 10, y + 10, 20, 20);
-                        
-                        // Círculos más pequeños arriba
-                        g.setColor(new Color(128, 0, 128));
-                        g.fillOval(x + 8, y + 6, 12, 12);
-                        g.fillOval(x + 20, y + 6, 12, 12);
-                    } else if (fruitType.equals("BANANA")) {
-                        // Plátano con forma de media luna
-                        g.setColor(Color.YELLOW);
-                        g.fillArc(x + 5, y + 10, 30, 20, 0, 180);
-                        g.setColor(new Color(200, 180, 0)); // Amarillo más oscuro
-                        g.drawArc(x + 5, y + 10, 30, 20, 0, 180);
-                        
-                        // Línea central del plátano
-                        g.drawLine(x + 10, y + 20, x + 30, y + 20);
-                    }
+                    drawSimpleFruit(g, x, y, fruit.getType());
                 }
             }
+        }
+    }
+    
+    /**
+     * Dibuja una fruta simple sin imagen
+     */
+    private void drawSimpleFruit(Graphics g, int x, int y, String fruitType) {
+        if (fruitType.equals("GRAPE")) {
+            // Racimo de uvas (3 círculos)
+            g.setColor(new Color(128, 0, 128)); // Morado
+            g.fillOval(x + 10, y + 10, 20, 20);
+            g.setColor(new Color(75, 0, 130)); // Morado oscuro
+            g.drawOval(x + 10, y + 10, 20, 20);
+            
+            // Círculos más pequeños arriba
+            g.setColor(new Color(128, 0, 128));
+            g.fillOval(x + 8, y + 6, 12, 12);
+            g.fillOval(x + 20, y + 6, 12, 12);
+        } else if (fruitType.equals("BANANA")) {
+            // Plátano con forma de media luna
+            g.setColor(Color.YELLOW);
+            g.fillArc(x + 5, y + 10, 30, 20, 0, 180);
+            g.setColor(new Color(200, 180, 0)); // Amarillo más oscuro
+            g.drawArc(x + 5, y + 10, 30, 20, 0, 180);
+            
+            // Línea central del plátano
+            g.drawLine(x + 10, y + 20, x + 30, y + 20);
+        } else if (fruitType.equals("PINEAPPLE")) {
+            // Piña
+            g.setColor(new Color(255, 215, 0));
+            g.fillOval(x + 10, y + 12, 20, 20);
+            g.setColor(new Color(34, 139, 34));
+            int[] xp = {x + 15, x + 20, x + 25};
+            int[] yp = {y + 12, y + 5, y + 12};
+            g.fillPolygon(xp, yp, 3);
+        } else if (fruitType.equals("CHERRY")) {
+            // Cerezas
+            g.setColor(Color.RED);
+            g.fillOval(x + 12, y + 15, 12, 12);
+            g.fillOval(x + 20, y + 17, 12, 12);
+            g.setColor(new Color(139, 0, 0));
+            g.drawOval(x + 12, y + 15, 12, 12);
+            g.drawOval(x + 20, y + 17, 12, 12);
         }
     }
     
@@ -220,7 +261,7 @@ public class GamePanel extends JPanel {
             
             String flavorKey = player.getFlavor().toLowerCase();
             
-            if (useImages && images.containsKey(flavorKey)) {
+            if (useImages && images.containsKey(flavorKey) && images.get(flavorKey) != null) {
                 g.drawImage(images.get(flavorKey), x, y, CELL_SIZE, CELL_SIZE, this);
             } else {
                 // Gráfico simple del helado
@@ -270,34 +311,114 @@ public class GamePanel extends JPanel {
             
             String enemyType = enemy.getType().toLowerCase();
             
-            if (useImages && images.containsKey(enemyType)) {
-                g.drawImage(images.get(enemyType), x, y, CELL_SIZE, CELL_SIZE, this);
+            // Mapear tipos de enemigos
+            String imageKey = null;
+            if (enemyType.equals("troll")) {
+                imageKey = "troll";
+            } else if (enemyType.equals("pot")) {
+                imageKey = "pot";
+            } else if (enemyType.equals("squid")) {
+                imageKey = "squid";
+            }
+            
+            if (useImages && imageKey != null && images.containsKey(imageKey) && images.get(imageKey) != null) {
+                g.drawImage(images.get(imageKey), x, y, CELL_SIZE, CELL_SIZE, this);
             } else {
-                if (enemy.getType().equals("TROLL")) {
-                    // Cara del troll (círculo verde con expresión enojada)
-                    g.setColor(new Color(34, 139, 34)); // Verde bosque
-                    g.fillOval(x + 5, y + 5, 30, 30);
-                    
-                    // Ojos rojos enojados
-                    g.setColor(Color.RED);
-                    g.fillOval(x + 12, y + 13, 6, 6);
-                    g.fillOval(x + 22, y + 13, 6, 6);
-                    
-                    // Cejas enojadas
-                    g.setColor(new Color(20, 100, 20)); // Verde más oscuro
-                    g.drawLine(x + 11, y + 12, x + 17, y + 14);
-                    g.drawLine(x + 23, y + 14, x + 29, y + 12);
-                    
-                    // Boca fruncida
-                    g.setColor(Color.BLACK);
-                    g.drawArc(x + 12, y + 20, 16, 10, 0, -180);
-                    
-                    // Borde del rostro
-                    g.setColor(new Color(20, 100, 20));
-                    g.drawOval(x + 5, y + 5, 30, 30);
+                // Dibujar enemigo simple según tipo
+                if (enemyType.equals("troll")) {
+                    drawSimpleTroll(g, x, y);
+                } else if (enemyType.equals("pot")) {
+                    drawSimplePot(g, x, y);
+                } else if (enemyType.equals("squid")) {
+                    drawSimpleSquid(g, x, y);
                 }
             }
         }
+    }
+    
+    /**
+     * Dibuja un troll simple
+     */
+    private void drawSimpleTroll(Graphics g, int x, int y) {
+        // Cara del troll (círculo verde con expresión enojada)
+        g.setColor(new Color(34, 139, 34)); // Verde bosque
+        g.fillOval(x + 5, y + 5, 30, 30);
+        
+        // Ojos rojos enojados
+        g.setColor(Color.RED);
+        g.fillOval(x + 12, y + 13, 6, 6);
+        g.fillOval(x + 22, y + 13, 6, 6);
+        
+        // Cejas enojadas
+        g.setColor(new Color(20, 100, 20)); // Verde más oscuro
+        g.drawLine(x + 11, y + 12, x + 17, y + 14);
+        g.drawLine(x + 23, y + 14, x + 29, y + 12);
+        
+        // Boca fruncida
+        g.setColor(Color.BLACK);
+        g.drawArc(x + 12, y + 20, 16, 10, 0, -180);
+        
+        // Borde del rostro
+        g.setColor(new Color(20, 100, 20));
+        g.drawOval(x + 5, y + 5, 30, 30);
+    }
+    
+    /**
+     * Dibuja una maceta simple
+     */
+    private void drawSimplePot(Graphics g, int x, int y) {
+        // Maceta (trapecio marrón)
+        g.setColor(new Color(139, 69, 19));
+        int[] xPoints = {x + 10, x + 30, x + 28, x + 12};
+        int[] yPoints = {y + 35, y + 35, y + 20, y + 20};
+        g.fillPolygon(xPoints, yPoints, 4);
+        
+        // Borde de la maceta
+        g.setColor(new Color(101, 51, 15));
+        g.drawPolygon(xPoints, yPoints, 4);
+        
+        // Planta (círculo verde con hojas)
+        g.setColor(new Color(34, 139, 34));
+        g.fillOval(x + 15, y + 10, 10, 10);
+        
+        // Hojas
+        g.fillOval(x + 12, y + 8, 8, 8);
+        g.fillOval(x + 20, y + 8, 8, 8);
+        g.fillOval(x + 16, y + 5, 8, 8);
+        
+        // Ojos malvados en la planta
+        g.setColor(Color.RED);
+        g.fillOval(x + 17, y + 12, 3, 3);
+        g.fillOval(x + 22, y + 12, 3, 3);
+    }
+    
+    /**
+     * Dibuja un calamar simple
+     */
+    private void drawSimpleSquid(Graphics g, int x, int y) {
+        // Cuerpo del calamar (óvalo naranja)
+        g.setColor(new Color(255, 140, 0));
+        g.fillOval(x + 8, y + 8, 24, 20);
+        
+        // Tentáculos
+        g.setColor(new Color(255, 100, 0));
+        for (int i = 0; i < 4; i++) {
+            int tentX = x + 10 + i * 6;
+            g.fillRect(tentX, y + 26, 4, 10);
+        }
+        
+        // Ojos
+        g.setColor(Color.WHITE);
+        g.fillOval(x + 14, y + 14, 6, 6);
+        g.fillOval(x + 22, y + 14, 6, 6);
+        
+        g.setColor(Color.BLACK);
+        g.fillOval(x + 16, y + 16, 3, 3);
+        g.fillOval(x + 24, y + 16, 3, 3);
+        
+        // Contorno
+        g.setColor(new Color(200, 100, 0));
+        g.drawOval(x + 8, y + 8, 24, 20);
     }
     
     /**

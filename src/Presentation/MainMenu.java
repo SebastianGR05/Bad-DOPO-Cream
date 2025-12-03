@@ -3,6 +3,7 @@ package Presentation;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.imageio.ImageIO;
 
 /**
  * Menú principal del juego Bad DOPO-Cream
@@ -11,7 +12,6 @@ import java.awt.event.*;
 public class MainMenu extends JFrame {
     
     private JButton btnPlay;
-    private JButton btnControls;
     private JButton btnExit;
     private Image backgroundImage;
     
@@ -27,12 +27,12 @@ public class MainMenu extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
         
-        // Intentar cargar imagen de fondo
+        // Cargar imagen de fondo del menú principal
         try {
-            backgroundImage = new ImageIcon(getClass().getResource(
-                "/images/menu/main-menu-background.png")).getImage();
+            backgroundImage = ImageIO.read(getClass().getResourceAsStream(
+                "/images/menu/principalMenu.png"));
         } catch (Exception e) {
-            System.out.println("No se pudo cargar el fondo del menú principal");
+            System.out.println("No se pudo cargar principalMenu.png: " + e.getMessage());
         }
         
         // Panel principal con imagen de fondo
@@ -51,54 +51,54 @@ public class MainMenu extends JFrame {
                     Graphics2D g2d = (Graphics2D) g;
                     g2d.setPaint(gradient);
                     g2d.fillRect(0, 0, getWidth(), getHeight());
+                    
+                    // Dibujar título si no hay imagen
+                    g2d.setColor(Color.WHITE);
+                    g2d.setFont(new Font("Arial", Font.BOLD, 72));
+                    String title = "Bad DOPO-Cream";
+                    FontMetrics fm = g2d.getFontMetrics();
+                    int titleWidth = fm.stringWidth(title);
+                    g2d.drawString(title, (getWidth() - titleWidth) / 2, 200);
                 }
             }
         };
         mainPanel.setLayout(null);
         
-        // Título del juego
-        JLabel title = new JLabel("Bad DOPO-Cream");
-        title.setFont(new Font("Arial", Font.BOLD, 72));
-        title.setForeground(Color.WHITE);
-        title.setBounds(180, 100, 600, 100);
-        title.setHorizontalAlignment(SwingConstants.CENTER);
-        mainPanel.add(title);
-        
-        // Botones del menú
-        btnPlay = createMenuButton("JUGAR", 350, 300);
-        btnControls = createMenuButton("CONTROLES", 350, 390);
-        btnExit = createMenuButton("SALIR", 350, 480);
-        
+        // Botón JUGAR (invisible sobre la imagen)
+        // Ajusta estas coordenadas según donde esté el botón en tu imagen
+        btnPlay = createInvisibleButton(275, 480, 340, 50);
         mainPanel.add(btnPlay);
-        mainPanel.add(btnControls);
+        
+        // Botón SALIR (invisible, debajo del botón jugar)
+        btnExit = createInvisibleButton(275, 590, 340, 50);
         mainPanel.add(btnExit);
         
         add(mainPanel);
     }
     
     /**
-     * Crea un botón con el estilo del menú
+     * Crea un botón invisible que se coloca sobre la imagen
      */
-    private JButton createMenuButton(String text, int x, int y) {
-        JButton button = new JButton(text);
-        button.setBounds(x, y, 200, 60);
-        button.setFont(new Font("Arial", Font.BOLD, 24));
-        button.setBackground(new Color(100, 180, 255));
-        button.setForeground(Color.WHITE);
-        button.setFocusPainted(false);
+    private JButton createInvisibleButton(int x, int y, int width, int height) {
+        JButton button = new JButton();
+        button.setBounds(x, y, width, height);
+        button.setOpaque(false);
+        button.setContentAreaFilled(false);
         button.setBorderPainted(false);
+        button.setFocusPainted(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
-        // Efecto hover
+        // Efecto hover sutil
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                button.setBackground(new Color(120, 200, 255));
+                // Opcional: podrías agregar un efecto visual aquí
+                button.setBorderPainted(false);
             }
             
             @Override
             public void mouseExited(MouseEvent e) {
-                button.setBackground(new Color(100, 180, 255));
+                button.setBorderPainted(false);
             }
         });
         
@@ -116,10 +116,6 @@ public class MainMenu extends JFrame {
             dispose();
         });
         
-        btnControls.addActionListener(e -> {
-            showControls();
-        });
-        
         btnExit.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(this,
                 "¿Seguro que deseas salir?",
@@ -129,35 +125,6 @@ public class MainMenu extends JFrame {
                 System.exit(0);
             }
         });
-    }
-    
-    /**
-     * Muestra una ventana con los controles del juego
-     */
-    private void showControls() {
-        String controlsText = "=== CONTROLES DEL JUEGO ===\n\n" +
-                             "MOVIMIENTO:\n" +
-                             "  • Flechas o WASD - Mover el helado\n\n" +
-                             "ACCIONES:\n" +
-                             "  • ESPACIO - Crear/Romper bloques de hielo\n" +
-                             "  • P o ESC - Pausar el juego\n" +
-                             "  • R - Reiniciar nivel\n\n" +
-                             "OBJETIVO:\n" +
-                             "  • Recolecta todas las frutas del nivel\n" +
-                             "  • Evita a los enemigos\n" +
-                             "  • Completa el nivel en 3 minutos\n\n" +
-                             "ESTRATEGIA:\n" +
-                             "  • Usa bloques de hielo para bloquear enemigos\n" +
-                             "  • Los bloques se destruyen en efecto dominó\n" +
-                             "  • Cada nivel tiene enemigos y frutas diferentes";
-        
-        JTextArea textArea = new JTextArea(controlsText);
-        textArea.setEditable(false);
-        textArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
-        textArea.setBackground(new Color(240, 240, 240));
-        
-        JOptionPane.showMessageDialog(this, textArea, 
-            "Controles del Juego", JOptionPane.INFORMATION_MESSAGE);
     }
     
     /**

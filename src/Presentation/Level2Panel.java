@@ -11,60 +11,6 @@ public class Level2Panel extends LevelPanel {
     
     public Level2Panel(Game game) {
         super(game);
-        loadLevelSpecificImages();
-    }
-    
-    @Override
-    protected void loadLevelSpecificImages() {
-        try {
-            images.put("pot", loadImage("/images/enemies/pot.png"));
-            images.put("pineapple", loadImage("/images/fruits/pineapple.png"));
-            images.put("background2", loadImage("/images/levels/level2-background.png"));
-        } catch (Exception e) {
-            System.err.println("Error cargando imágenes del nivel 2");
-        }
-    }
-    
-    @Override
-    protected void drawBackground(Graphics g) {
-        if (useImages && images.containsKey("background2") && images.get("background2") != null) {
-            g.drawImage(images.get("background2"), 0, 0, getWidth(), getHeight(), this);
-        } else {
-            // Fondo azul medio para nivel 2
-            GradientPaint gradient = new GradientPaint(
-                0, 0, new Color(100, 149, 237),
-                getWidth(), getHeight(), new Color(65, 105, 225)
-            );
-            Graphics2D g2d = (Graphics2D) g;
-            g2d.setPaint(gradient);
-            g2d.fillRect(0, 0, getWidth(), getHeight());
-        }
-    }
-    
-    @Override
-    protected void drawFruits(Graphics g) {
-        for (Fruit fruit : game.getFruits()) {
-            if (fruit.isCollected()) {
-                continue;
-            }
-            
-            int x = fruit.getPosition().getX() * CELL_SIZE;
-            int y = fruit.getPosition().getY() * CELL_SIZE;
-            String type = fruit.getType();
-            
-            if (useImages && images.containsKey(type.toLowerCase()) && 
-                images.get(type.toLowerCase()) != null) {
-                g.drawImage(images.get(type.toLowerCase()), x + 5, y + 5, 30, 30, this);
-            } else {
-                drawSimpleFruit(g, x, y, type);
-                
-                // Indicador de movimiento para las piñas
-                if (fruit instanceof Pineapple) {
-                    g.setColor(new Color(255, 255, 0, 100));
-                    g.drawOval(x + 3, y + 3, 34, 34);
-                }
-            }
-        }
     }
     
     @Override

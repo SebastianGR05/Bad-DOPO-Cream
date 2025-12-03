@@ -4,6 +4,7 @@ import Domain.Game;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.imageio.ImageIO;
 
 /**
  * Menú de selección de nivel
@@ -12,9 +13,6 @@ import java.awt.event.*;
 public class LevelSelectionMenu extends JFrame {
     
     private String iceCreamFlavor;
-    private JButton btnLevel1;
-    private JButton btnLevel2;
-    private JButton btnLevel3;
     private JButton btnBack;
     private Image backgroundImage;
     
@@ -31,12 +29,12 @@ public class LevelSelectionMenu extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
         
-        // Intentar cargar imagen de fondo
+        // Cargar imagen de fondo común
         try {
-            backgroundImage = new ImageIcon(getClass().getResource(
-                "/images/menu/level-selection-background.png")).getImage();
+            backgroundImage = ImageIO.read(getClass().getResourceAsStream(
+                "/images/menu/menusBackground.png"));
         } catch (Exception e) {
-            System.out.println("No se pudo cargar el fondo de selección de nivel");
+            System.out.println("No se pudo cargar menusBackground.png: " + e.getMessage());
         }
         
         // Panel principal
@@ -93,7 +91,7 @@ public class LevelSelectionMenu extends JFrame {
         mainPanel.add(level3Panel);
         
         // Botón volver
-        btnBack = createSmallButton("← Volver", 20, 20);
+        btnBack = createBackButton();
         mainPanel.add(btnBack);
         
         add(mainPanel);
@@ -102,11 +100,17 @@ public class LevelSelectionMenu extends JFrame {
     private JPanel createLevelPanel(String levelName, String difficulty, 
                                     String description, int x, int y) {
         JPanel panel = new JPanel() {
+            private boolean hover = false;
+            
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 // Fondo del panel
-                g.setColor(new Color(255, 255, 255, 230));
+                if (hover) {
+                    g.setColor(new Color(255, 255, 255, 250));
+                } else {
+                    g.setColor(new Color(255, 255, 255, 230));
+                }
                 g.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
                 
                 // Borde
@@ -150,59 +154,72 @@ public class LevelSelectionMenu extends JFrame {
         descLabel.setBounds(220, 30, 360, 25);
         panel.add(descLabel);
         
-        // Efecto hover
-        panel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                panel.setBackground(new Color(200, 230, 255));
-                panel.repaint();
-            }
-            
-            @Override
-            public void mouseExited(MouseEvent e) {
-                panel.setBackground(null);
-                panel.repaint();
-            }
-        });
-        
         return panel;
     }
     
-    private JButton createSmallButton(String text, int x, int y) {
-        JButton button = new JButton(text);
-        button.setBounds(x, y, 120, 40);
-        button.setFont(new Font("Arial", Font.BOLD, 16));
-        button.setBackground(new Color(80, 150, 220));
-        button.setForeground(Color.WHITE);
-        button.setFocusPainted(false);
-        button.setBorderPainted(false);
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    private JButton createBackButton() {
+        Image backButtonImage = null;
+        try {
+            backButtonImage = ImageIO.read(getClass().getResourceAsStream(
+                "/images/buttons/backButton.png"));
+        } catch (Exception e) {
+            System.out.println("No se pudo cargar backButton.png: " + e.getMessage());
+        }
         
-        button.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                button.setBackground(new Color(100, 170, 240));
-            }
+        JButton button;
+        if (backButtonImage != null) {
+            button = new JButton(new ImageIcon(backButtonImage));
+            button.setBounds(20, 20, 160, 60);
+            button.setBorderPainted(false);
+            button.setContentAreaFilled(false);
+        } else {
+            button = new JButton("← Volver");
+            button.setBounds(20, 20, 120, 40);
+            button.setFont(new Font("Arial", Font.BOLD, 16));
+            button.setBackground(new Color(80, 150, 220));
+            button.setForeground(Color.WHITE);
+            button.setBorderPainted(false);
             
-            @Override
-            public void mouseExited(MouseEvent e) {
-                button.setBackground(new Color(80, 150, 220));
-            }
-        });
+            button.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    button.setBackground(new Color(100, 170, 240));
+                }
+                
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    button.setBackground(new Color(80, 150, 220));
+                }
+            });
+        }
+        
+        button.setFocusPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
         return button;
     }
     
     private void prepareActions() {
         // Obtener los paneles de nivel
-        JPanel level1Panel = (JPanel) ((JPanel) getContentPane().getComponent(0)).getComponent(1);
-        JPanel level2Panel = (JPanel) ((JPanel) getContentPane().getComponent(0)).getComponent(2);
-        JPanel level3Panel = (JPanel) ((JPanel) getContentPane().getComponent(0)).getComponent(3);
+        JPanel mainPanel = (JPanel) getContentPane().getComponent(0);
+        JPanel level1Panel = (JPanel) mainPanel.getComponent(1);
+        JPanel level2Panel = (JPanel) mainPanel.getComponent(2);
+        JPanel level3Panel = (JPanel) mainPanel.getComponent(3);
         
         level1Panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 startLevel(1);
+            }
+            
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                level1Panel.repaint();
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e) {
+                level1Panel.repaint();
             }
         });
         
@@ -211,12 +228,32 @@ public class LevelSelectionMenu extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 startLevel(2);
             }
+            
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                level2Panel.repaint();
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e) {
+                level2Panel.repaint();
+            }
         });
         
         level3Panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 startLevel(3);
+            }
+            
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                level3Panel.repaint();
+            }
+            
+            @Override
+            public void mouseExited(MouseEvent e) {
+                level3Panel.repaint();
             }
         });
         
@@ -231,7 +268,7 @@ public class LevelSelectionMenu extends JFrame {
         // Crear el juego con el nivel y sabor seleccionados
         Game game = new Game(levelNumber, iceCreamFlavor);
         
-        // Crear la ventana del juego con el panel correspondiente
+        // Crear la ventana del juego
         GameWindow gameWindow = new GameWindow(game, levelNumber);
         gameWindow.setVisible(true);
         dispose();

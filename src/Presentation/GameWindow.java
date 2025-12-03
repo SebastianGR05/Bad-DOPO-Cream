@@ -45,8 +45,8 @@ public class GameWindow extends JFrame {
         JPanel infoPanel = createInfoPanel();
         mainPanel.add(infoPanel, BorderLayout.NORTH);
         
-        // Panel del juego (centro)
-        JPanel centerPanel = new JPanel(new GridBagLayout());
+        // Panel del juego (centro) - SIN GridBagLayout para que ocupe todo el espacio
+        JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.setBackground(Color.DARK_GRAY);
         
         // Crear el panel de nivel correspondiente
@@ -65,7 +65,7 @@ public class GameWindow extends JFrame {
         }
         
         levelPanel.setFocusable(true);
-        centerPanel.add(levelPanel);
+        centerPanel.add(levelPanel, BorderLayout.CENTER);
         mainPanel.add(centerPanel, BorderLayout.CENTER);
         
         // Panel de controles inferior

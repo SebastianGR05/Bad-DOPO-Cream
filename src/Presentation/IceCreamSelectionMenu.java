@@ -3,6 +3,7 @@ package Presentation;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.imageio.ImageIO;
 
 /**
  * Menú de selección de sabor de helado
@@ -32,12 +33,12 @@ public class IceCreamSelectionMenu extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
         
-        // Intentar cargar imagen de fondo
+        // Cargar imagen de fondo común
         try {
-            backgroundImage = new ImageIcon(getClass().getResource(
-                "/images/menu/icecream-selection-background.png")).getImage();
+            backgroundImage = ImageIO.read(getClass().getResourceAsStream(
+                "/images/menu/menusBackground.png"));
         } catch (Exception e) {
-            System.out.println("No se pudo cargar el fondo de selección de helado");
+            System.out.println("No se pudo cargar menusBackground.png: " + e.getMessage());
         }
         
         // Panel principal
@@ -63,34 +64,34 @@ public class IceCreamSelectionMenu extends JFrame {
         // Título
         JLabel title = new JLabel("Elige tu Helado");
         title.setFont(new Font("Arial", Font.BOLD, 48));
-        title.setForeground(new Color(50, 50, 150));
+        title.setForeground(Color.BLACK);
         title.setBounds(250, 50, 400, 60);
         title.setHorizontalAlignment(SwingConstants.CENTER);
         mainPanel.add(title);
         
         // Paneles de helados
         vanillaPanel = new IceCreamPanel(
-            "/images/icecreams/vanilla.png", 
+            "/images/characters/vanillaMenuSelector.png", 
             "Vainilla", 
             "VANILLA"
         );
-        vanillaPanel.setBounds(150, 180, 150, 220);
+        vanillaPanel.setBounds(45, 180, 240, 180);
         mainPanel.add(vanillaPanel);
         
         strawberryPanel = new IceCreamPanel(
-            "/images/icecreams/strawberry.png", 
+            "/images/characters/strawberryMenuSelector.png", 
             "Fresa", 
             "STRAWBERRY"
         );
-        strawberryPanel.setBounds(375, 180, 150, 220);
+        strawberryPanel.setBounds(330, 180, 240, 180);
         mainPanel.add(strawberryPanel);
         
         chocolatePanel = new IceCreamPanel(
-            "/images/icecreams/chocolate.png", 
+            "/images/characters/chocolateMenuSelector.png", 
             "Chocolate", 
             "CHOCOLATE"
         );
-        chocolatePanel.setBounds(600, 180, 150, 220);
+        chocolatePanel.setBounds(615, 180, 240, 180);
         mainPanel.add(chocolatePanel);
         
         // Botón continuar
@@ -102,37 +103,54 @@ public class IceCreamSelectionMenu extends JFrame {
         btnContinue.setFocusPainted(false);
         btnContinue.setBorderPainted(false);
         btnContinue.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnContinue.setEnabled(false); // Deshabilitado hasta que seleccionen
+        btnContinue.setEnabled(false);
         mainPanel.add(btnContinue);
         
         // Botón volver
-        btnBack = createSmallButton("← Volver", 20, 20);
+        btnBack = createBackButton();
         mainPanel.add(btnBack);
         
         add(mainPanel);
     }
     
-    private JButton createSmallButton(String text, int x, int y) {
-        JButton button = new JButton(text);
-        button.setBounds(x, y, 120, 40);
-        button.setFont(new Font("Arial", Font.BOLD, 16));
-        button.setBackground(new Color(80, 150, 220));
-        button.setForeground(Color.WHITE);
-        button.setFocusPainted(false);
-        button.setBorderPainted(false);
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    private JButton createBackButton() {
+        Image backButtonImage = null;
+        try {
+            backButtonImage = ImageIO.read(getClass().getResourceAsStream(
+                "/images/buttons/backButton.png"));
+        } catch (Exception e) {
+            System.out.println("No se pudo cargar backButton.png: " + e.getMessage());
+        }
         
-        button.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                button.setBackground(new Color(100, 170, 240));
-            }
+        JButton button;
+        if (backButtonImage != null) {
+            button = new JButton(new ImageIcon(backButtonImage));
+            button.setBounds(20, 20, 160, 60);
+            button.setBorderPainted(false);
+            button.setContentAreaFilled(false);
+        } else {
+            button = new JButton("← Volver");
+            button.setBounds(20, 20, 120, 40);
+            button.setFont(new Font("Arial", Font.BOLD, 16));
+            button.setBackground(new Color(80, 150, 220));
+            button.setForeground(Color.WHITE);
+            button.setBorderPainted(false);
             
-            @Override
-            public void mouseExited(MouseEvent e) {
-                button.setBackground(new Color(80, 150, 220));
-            }
-        });
+            button.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    button.setBackground(new Color(100, 170, 240));
+                }
+                
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    button.setBackground(new Color(80, 150, 220));
+                }
+            });
+        }
+        
+        button.setFocusPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
         return button;
     }
@@ -162,7 +180,6 @@ public class IceCreamSelectionMenu extends JFrame {
         
         btnContinue.addActionListener(e -> {
             if (selectedFlavor != null) {
-                // Abrir menú de selección de nivel
                 LevelSelectionMenu levelMenu = new LevelSelectionMenu(selectedFlavor);
                 levelMenu.setVisible(true);
                 dispose();
@@ -206,9 +223,9 @@ public class IceCreamSelectionMenu extends JFrame {
             this.flavorCode = flavorCode;
             
             try {
-                image = new ImageIcon(getClass().getResource(imagePath)).getImage();
+                image = ImageIO.read(getClass().getResourceAsStream(imagePath));
             } catch (Exception e) {
-                System.out.println("No se pudo cargar: " + imagePath);
+                System.out.println("No se pudo cargar: " + imagePath + " - " + e.getMessage());
             }
             
             setOpaque(false);
@@ -232,7 +249,7 @@ public class IceCreamSelectionMenu extends JFrame {
             
             // Fondo del panel
             if (selected) {
-                g.setColor(new Color(200, 255, 200));
+                g.setColor(new Color(200, 255, 200, 220));
             } else {
                 g.setColor(new Color(255, 255, 255, 200));
             }
@@ -244,17 +261,8 @@ public class IceCreamSelectionMenu extends JFrame {
                 int x = (getWidth() - imageSize) / 2;
                 int y = 20;
                 g.drawImage(image, x, y, imageSize, imageSize, this);
-            } else {
-                // Dibujar helado simple si no hay imagen
-                drawSimpleIceCream(g);
-            }
             
-            // Nombre del helado
-            g.setColor(Color.BLACK);
-            g.setFont(new Font("Arial", Font.BOLD, 18));
-            FontMetrics fm = g.getFontMetrics();
-            int textWidth = fm.stringWidth(name);
-            g.drawString(name, (getWidth() - textWidth) / 2, getHeight() - 30);
+            }
             
             // Indicador de selección
             if (selected) {
@@ -266,29 +274,5 @@ public class IceCreamSelectionMenu extends JFrame {
             }
         }
         
-        private void drawSimpleIceCream(Graphics g) {
-            Color color;
-            switch(flavorCode) {
-                case "VANILLA": color = new Color(255, 250, 240); break;
-                case "STRAWBERRY": color = new Color(255, 182, 193); break;
-                case "CHOCOLATE": color = new Color(139, 69, 19); break;
-                default: color = Color.WHITE;
-            }
-            
-            int centerX = getWidth() / 2;
-            int centerY = 80;
-            
-            // Bola de helado
-            g.setColor(color);
-            g.fillOval(centerX - 40, centerY - 40, 80, 80);
-            g.setColor(color.darker());
-            g.drawOval(centerX - 40, centerY - 40, 80, 80);
-            
-            // Cono
-            g.setColor(new Color(210, 180, 140));
-            int[] xPoints = {centerX, centerX - 30, centerX + 30};
-            int[] yPoints = {centerY + 40, centerY + 80, centerY + 80};
-            g.fillPolygon(xPoints, yPoints, 3);
-        }
     }
 }

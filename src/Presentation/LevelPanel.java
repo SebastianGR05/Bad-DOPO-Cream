@@ -3,7 +3,6 @@ package Presentation;
 import Domain.*;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 import javax.imageio.ImageIO;
 import java.util.HashMap;
 
@@ -33,14 +32,33 @@ public abstract class LevelPanel extends JPanel {
      */
     private void loadCommonImages() {
         try {
+            // Bloques y paredes
             images.put("floor", loadImage("/images/levels/floor.png"));
-            images.put("wall", loadImage("/images/levels/wall.png"));
-            images.put("ice", loadImage("/images/blocks/ice-block.png"));
-            images.put("vanilla", loadImage("/images/icecreams/vanilla.png"));
-            images.put("strawberry", loadImage("/images/icecreams/strawberry.png"));
-            images.put("chocolate", loadImage("/images/icecreams/chocolate.png"));
-            images.put("grape", loadImage("/images/fruits/grape.png"));
+            images.put("wall", loadImage("/images/blocks/wall.png"));
+            images.put("ice", loadImage("/images/blocks/iceBlock.png"));
+            images.put("icebroken", loadImage("/images/blocks/iceBlockBroken.png"));
+            
+            // Helados (animados)
+            images.put("vanilla", loadImage("/images/characters/vanillaAnimated.gif"));
+            images.put("strawberry", loadImage("/images/characters/strawberryAnimated.png"));
+            images.put("chocolate", loadImage("/images/characters/chocolateAnimated.png"));
+            
+            // Frutas comunes
+            images.put("grape", loadImage("/images/fruits/grapes.png"));
             images.put("banana", loadImage("/images/fruits/banana.png"));
+            images.put("pineapple", loadImage("/images/fruits/pineapple.png"));
+            images.put("cherry", loadImage("/images/fruits/cherry.png"));
+            
+            // Enemigos 
+            images.put("troll", loadImage("/images/enemies/troll.png"));
+            images.put("pot", loadImage("/images/enemies/pot.png"));
+            images.put("squid", loadImage("/images/enemies/orangeSquid.png"));
+            
+            // Fondos
+            images.put("background", loadImage("/images/levels/background.png"));
+            images.put("iglu", loadImage("/images/levels/iglu.png"));
+            
+            System.out.println("Imágenes comunes cargadas correctamente");
         } catch (Exception e) {
             System.err.println("Error cargando imágenes comunes: " + e.getMessage());
             useImages = false;
@@ -58,11 +76,6 @@ public abstract class LevelPanel extends JPanel {
             return null;
         }
     }
-    
-    /**
-     * Método abstracto para cargar imágenes específicas del nivel
-     */
-    protected abstract void loadLevelSpecificImages();
     
     @Override
     protected void paintComponent(Graphics g) {
@@ -84,9 +97,12 @@ public abstract class LevelPanel extends JPanel {
      * Dibuja el fondo del nivel
      */
     protected void drawBackground(Graphics g) {
-        // Este método puede ser sobrescrito por cada nivel para fondos personalizados
-        g.setColor(new Color(10, 20, 40));
-        g.fillRect(0, 0, getWidth(), getHeight());
+        if (useImages && images.containsKey("background") && images.get("background") != null) {
+            g.drawImage(images.get("background"), 0, 0, getWidth(), getHeight(), this);
+        } else {
+            g.setColor(new Color(10, 20, 40));
+            g.fillRect(0, 0, getWidth(), getHeight());
+        }
     }
     
     /**
@@ -173,9 +189,25 @@ public abstract class LevelPanel extends JPanel {
     }
     
     /**
-     * Dibuja todas las frutas (método abstracto, cada nivel lo implementa)
+     * Dibuja todas las frutas
      */
-    protected abstract void drawFruits(Graphics g);
+    protected void drawFruits(Graphics g) {
+        for (Fruit fruit : game.getFruits()) {
+            if (fruit.isCollected()) {
+                continue;
+            }
+            
+            int x = fruit.getPosition().getX() * CELL_SIZE;
+            int y = fruit.getPosition().getY() * CELL_SIZE;
+            String type = fruit.getType().toLowerCase();
+            
+            if (useImages && images.containsKey(type) && images.get(type) != null) {
+                g.drawImage(images.get(type), x + 5, y + 5, 30, 30, this);
+            } else {
+                drawSimpleFruit(g, x, y, fruit.getType());
+            }
+        }
+    }
     
     /**
      * Dibuja el jugador (helado)

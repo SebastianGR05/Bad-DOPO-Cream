@@ -3,6 +3,7 @@ package Presentation;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import javax.imageio.ImageIO;
 
 /**
  * Menú de selección de modalidad de juego
@@ -28,12 +29,12 @@ public class ModalityMenu extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
         
-        // Intentar cargar imagen de fondo
+        // Cargar imagen de fondo común para menús
         try {
-            backgroundImage = new ImageIcon(getClass().getResource(
-                "/images/menu/modality-menu-background.png")).getImage();
+            backgroundImage = ImageIO.read(getClass().getResourceAsStream(
+                "/images/menu/menusBackground.png"));
         } catch (Exception e) {
-            System.out.println("No se pudo cargar el fondo del menú de modalidades");
+            System.out.println("No se pudo cargar menusBackground.png: " + e.getMessage());
         }
         
         // Panel principal
@@ -59,27 +60,10 @@ public class ModalityMenu extends JFrame {
         // Título
         JLabel title = new JLabel("Selecciona la Modalidad");
         title.setFont(new Font("Arial", Font.BOLD, 48));
-        title.setForeground(Color.WHITE);
-        title.setBounds(200, 80, 600, 60);
+        title.setForeground(Color.BLACK);
+        title.setBounds(150, 80, 600, 60);
         title.setHorizontalAlignment(SwingConstants.CENTER);
         mainPanel.add(title);
-        
-        // Descripción de cada modalidad
-        JPanel descriptionsPanel = new JPanel();
-        descriptionsPanel.setLayout(new BoxLayout(descriptionsPanel, BoxLayout.Y_AXIS));
-        descriptionsPanel.setOpaque(false);
-        descriptionsPanel.setBounds(150, 450, 600, 150);
-        
-        JLabel descriptionLabel = new JLabel("<html><center>Elige cómo quieres jugar:<br>" +
-            "• PvP: Tú controlas el helado, otro jugador controla al enemigo<br>" +
-            "• PvM: Tú contra enemigos automáticos<br>" +
-            "• MvM: Observa cómo la máquina juega contra sí misma</center></html>");
-        descriptionLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-        descriptionLabel.setForeground(Color.WHITE);
-        descriptionLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        descriptionsPanel.add(descriptionLabel);
-        
-        mainPanel.add(descriptionsPanel);
         
         // Botones de modalidades
         btnPvP = createModalityButton("Player vs Player", 150, 200);
@@ -90,8 +74,9 @@ public class ModalityMenu extends JFrame {
         mainPanel.add(btnPvM);
         mainPanel.add(btnMvM);
         
+        
         // Botón de regresar
-        btnBack = createSmallButton("← Volver", 20, 20);
+        btnBack = createBackButton();
         mainPanel.add(btnBack);
         
         add(mainPanel);
@@ -122,27 +107,47 @@ public class ModalityMenu extends JFrame {
         return button;
     }
     
-    private JButton createSmallButton(String text, int x, int y) {
-        JButton button = new JButton(text);
-        button.setBounds(x, y, 120, 40);
-        button.setFont(new Font("Arial", Font.BOLD, 16));
-        button.setBackground(new Color(80, 150, 220));
-        button.setForeground(Color.WHITE);
-        button.setFocusPainted(false);
-        button.setBorderPainted(false);
-        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    private JButton createBackButton() {
+        // Intentar cargar imagen del botón de regresar
+        Image backButtonImage = null;
+        try {
+            backButtonImage = ImageIO.read(getClass().getResourceAsStream(
+                "/images/buttons/backButton.png"));
+        } catch (Exception e) {
+            System.out.println("No se pudo cargar backButton.png: " + e.getMessage());
+        }
         
-        button.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                button.setBackground(new Color(100, 170, 240));
-            }
+        JButton button;
+        if (backButtonImage != null) {
+            // Usar imagen del botón
+            button = new JButton(new ImageIcon(backButtonImage));
+            button.setBounds(370, 500, 160, 60);
+            button.setBorderPainted(false);
+            button.setContentAreaFilled(false);
+        } else {
+            // Botón de texto simple
+            button = new JButton("← Volver");
+            button.setBounds(20, 20, 130, 40);
+            button.setFont(new Font("Arial", Font.BOLD, 16));
+            button.setBackground(new Color(80, 150, 220));
+            button.setForeground(Color.WHITE);
+            button.setBorderPainted(false);
             
-            @Override
-            public void mouseExited(MouseEvent e) {
-                button.setBackground(new Color(80, 150, 220));
-            }
-        });
+            button.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    button.setBackground(new Color(100, 170, 240));
+                }
+                
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    button.setBackground(new Color(80, 150, 220));
+                }
+            });
+        }
+        
+        button.setFocusPainted(false);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
         return button;
     }
@@ -151,8 +156,7 @@ public class ModalityMenu extends JFrame {
         btnPvP.addActionListener(e -> {
             // Por ahora, PvP no está implementado
             JOptionPane.showMessageDialog(this,
-                "La modalidad Player vs Player estará disponible en una versión futura.\n" +
-                "Por ahora, prueba Player vs Machine.",
+                "La modalidad Player vs Player estará disponible en una versión futura.\n",
                 "Próximamente",
                 JOptionPane.INFORMATION_MESSAGE);
         });
@@ -167,8 +171,7 @@ public class ModalityMenu extends JFrame {
         btnMvM.addActionListener(e -> {
             // Por ahora, MvM no está implementado
             JOptionPane.showMessageDialog(this,
-                "La modalidad Machine vs Machine estará disponible en una versión futura.\n" +
-                "Por ahora, prueba Player vs Machine.",
+                "La modalidad Machine vs Machine estará disponible en una versión futura.\n",
                 "Próximamente",
                 JOptionPane.INFORMATION_MESSAGE);
         });
