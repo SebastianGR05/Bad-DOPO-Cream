@@ -486,28 +486,10 @@ public class GUI extends JFrame {
     }
     
     /**
-     * Método principal para ejecutar el juego desde consola
+     * Método principal para iniciar el juego
      */
     public static void main(String[] args) {
-        System.out.println("=================================");
-        System.out.println("   Bad DOPO-Cream - Nivel 1");
-        System.out.println("=================================");
-        System.out.println("Controles:");
-        System.out.println("  Flechas/WASD - Mover");
-        System.out.println("  ESPACIO - Crear/Romper hielo");
-        System.out.println("  P/ESC - Pausar");
-        System.out.println("  R - Reiniciar");
-        System.out.println("=================================");
-        System.out.println("Objetivo: Recolectar 8 uvas y 8 plátanos");
-        System.out.println("Evita a los 2 trolls enemigos!");
-        System.out.println("=================================\n");
-        System.out.println("Iniciando juego...\n");
-        
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                GUI gui = new GUI();
-                gui.setVisible(true);
-            }
-        });
+            MainMenu menu = new MainMenu();
+            menu.setVisible(true);
     }
 }
