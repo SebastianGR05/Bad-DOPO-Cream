@@ -44,8 +44,6 @@ public class GUI extends JFrame {
     private Timer updateTimer;
     
     public GUI() {
-        super("Bad DOPO-Cream - Nivel 1");
-        game = new Game();
         prepareElements();
         prepareActions();
     }

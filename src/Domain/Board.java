@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 /**
  * Representa el tablero del juego con soporte para diferentes niveles
+ * Usa las matrices predefinidas de los niveles
  */
 public class Board {
     private int width;
@@ -13,10 +14,9 @@ public class Board {
     private int currentLevel;
     
     public Board(int width, int height) {
-        // Usar tamaño fijo de 20x20 para todos los niveles
-        // Los parámetros se mantienen por compatibilidad pero no se usan
-        this.width = 20;
-        this.height = 20;
+        // Usar tamaño fijo de 16x16 para todos los niveles
+        this.width = 16;
+        this.height = 16;
         this.grid = new int[this.height][this.width];
         this.iceBlocks = new ArrayList<>();
         this.currentLevel = 1;
@@ -27,8 +27,8 @@ public class Board {
      * Constructor alternativo que permite especificar el nivel
      */
     public Board(int width, int height, int level) {
-        this.width = 20;
-        this.height = 20;
+        this.width = 16;
+        this.height = 16;
         this.grid = new int[this.height][this.width];
         this.iceBlocks = new ArrayList<>();
         this.currentLevel = level;
@@ -49,111 +49,104 @@ public class Board {
     }
     
     /**
-     * Crea el diseño del nivel 1 - Laberinto básico
+     * Crea el diseño del nivel 1 según la matriz predefinida
      */
     private void createLevel1() {
-        // Primero llenar todo de vacío
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                grid[i][j] = 0;
-            }
-        }
+        int[][] level1Matrix = {
+            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+            {1,6,0,0,0,0,0,0,0,0,0,0,4,0,6,1},
+            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+            {1,0,5,0,0,0,0,0,0,0,0,0,0,5,0,1},
+            {1,0,0,2,2,0,0,0,0,0,0,2,2,0,0,1},
+            {1,0,0,2,6,0,0,0,0,0,4,6,2,0,0,1},
+            {1,5,0,2,0,0,1,1,1,1,0,0,2,0,5,1},
+            {1,0,0,2,0,0,1,1,1,1,0,0,2,0,0,1},
+            {1,0,0,2,0,0,1,1,1,1,0,0,2,0,0,1},
+            {1,5,0,2,0,0,1,1,1,1,0,0,2,0,5,1},
+            {1,0,0,2,6,0,0,0,0,0,0,6,2,0,0,1},
+            {1,0,0,2,2,0,0,0,0,0,0,2,2,0,0,1},
+            {1,0,5,0,0,0,0,0,0,0,0,0,0,5,0,1},
+            {1,0,0,0,0,0,0,3,0,0,0,0,0,0,0,1},
+            {1,6,0,0,0,0,0,0,0,0,0,0,0,0,6,1},
+            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+        };
         
-        // Crear paredes del borde exterior
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                if (i == 0 || i == height-1 || j == 0 || j == width-1) {
-                    grid[i][j] = 1; // Pared
-                }
-            }
-        }
-        
-        // Crear un laberinto simple con paredes internas
-        // Pared vertical central con abertura
-        for (int i = 3; i < height-3; i++) {
-            if (i != height/2 && i != height/2 + 1) {
-                grid[i][width/2] = 1;
-            }
-        }
-        
-        // Paredes horizontales para crear secciones
-        for (int j = 3; j < width/2-2; j++) {
-            grid[height/3][j] = 1;
-        }
-        for (int j = width/2+3; j < width-3; j++) {
-            grid[2*height/3][j] = 1;
-        }
-        
-        // Algunas paredes adicionales para hacer el laberinto más interesante
-        for (int i = 5; i < 8; i++) {
-            grid[i][5] = 1;
-        }
-        for (int i = 12; i < 15; i++) {
-            grid[i][14] = 1;
-        }
+        loadMatrixToGrid(level1Matrix);
     }
     
     /**
-     * Crea el diseño del nivel 2 - Laberinto intermedio con más obstáculos
+     * Crea el diseño del nivel 2 según la matriz predefinida
      */
     private void createLevel2() {
-        // Similar a nivel 1 pero con más complejidad
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                if (i == 0 || i == height-1 || j == 0 || j == width-1) {
-                    grid[i][j] = 1;
-                } else {
-                    grid[i][j] = 0;
-                }
-            }
-        }
+        int[][] level2Matrix = {
+            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+            {1,0,0,7,0,0,0,0,0,0,0,0,7,0,0,1},
+            {1,0,2,0,2,0,2,0,0,2,0,2,0,2,0,1},
+            {1,7,0,0,0,0,0,0,0,0,0,0,4,0,7,1},
+            {1,0,2,0,0,0,5,2,2,5,0,0,0,2,0,1},
+            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+            {1,0,2,0,2,0,1,1,1,1,0,2,0,2,0,1},
+            {1,0,2,0,5,0,1,1,1,1,0,5,0,2,0,1},
+            {1,0,2,0,5,0,1,1,1,1,0,5,0,2,0,1},
+            {1,0,2,0,2,0,1,1,1,1,0,2,0,2,0,1},
+            {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+            {1,0,2,0,0,0,5,2,2,5,0,0,0,2,0,1},
+            {1,7,0,3,0,0,0,0,0,0,0,0,4,0,7,1},
+            {1,0,2,0,2,0,2,0,0,2,0,2,0,2,0,1},
+            {1,0,0,7,0,0,0,0,0,0,0,0,7,0,0,1},
+            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+        };
         
-        // Paredes más complejas para nivel 2
-        // Crear una cruz central
-        for (int i = height/3; i < 2*height/3; i++) {
-            grid[i][width/2] = 1;
-        }
-        for (int j = width/3; j < 2*width/3; j++) {
-            grid[height/2][j] = 1;
-        }
-        
-        // Aberturas en la cruz
-        grid[height/2][width/2] = 0;
-        grid[height/2 - 2][width/2] = 0;
-        grid[height/2 + 2][width/2] = 0;
-        grid[height/2][width/2 - 2] = 0;
-        grid[height/2][width/2 + 2] = 0;
+        loadMatrixToGrid(level2Matrix);
     }
     
     /**
-     * Crea el diseño del nivel 3 - Laberinto difícil
+     * Crea el diseño del nivel 3 según la matriz predefinida
      */
     private void createLevel3() {
+        int[][] level3Matrix = {
+            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+            {1,8,0,0,7,0,0,0,0,0,0,7,0,0,8,1},
+            {1,0,2,2,0,2,2,2,2,2,2,0,2,2,0,1},
+            {1,0,2,2,0,2,2,2,2,2,2,0,2,2,0,1},
+            {1,7,0,0,0,0,0,0,0,0,0,0,0,0,7,1},
+            {1,0,2,2,0,8,0,4,0,0,8,0,2,2,0,1},
+            {1,0,2,2,0,0,1,1,1,1,0,0,2,2,0,1},
+            {1,0,2,2,0,0,1,1,1,1,0,0,2,2,0,1},
+            {1,0,2,2,0,0,1,1,1,1,0,0,2,2,0,1},
+            {1,0,2,2,0,0,1,1,1,1,0,0,2,2,0,1},
+            {1,0,2,2,0,8,0,0,3,0,8,0,2,2,0,1},
+            {1,7,0,0,0,0,0,0,0,0,0,0,0,0,7,1},
+            {1,0,2,2,0,2,2,2,2,2,2,0,2,2,0,1},
+            {1,0,2,2,0,2,2,2,2,2,2,0,2,2,0,1},
+            {1,8,0,0,7,0,0,0,0,0,0,7,0,0,8,1},
+            {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
+        };
+        
+        loadMatrixToGrid(level3Matrix);
+    }
+    
+    /**
+     * Carga una matriz en el grid del tablero y crea bloques de hielo iniciales
+     */
+    private void loadMatrixToGrid(int[][] matrix) {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                if (i == 0 || i == height-1 || j == 0 || j == width-1) {
-                    grid[i][j] = 1;
+                int value = matrix[i][j];
+                
+                // 0=empty, 1=wall, 2=ice block, 3=player, 4=enemy, 5-8=fruits
+                if (value == 1) {
+                    grid[i][j] = 1; // Pared
+                } else if (value == 2) {
+                    grid[i][j] = 0; // El espacio es vacío
+                    // Crear bloque de hielo en esta posición
+                    IceBlock block = new IceBlock(j, i);
+                    iceBlocks.add(block);
                 } else {
-                    grid[i][j] = 0;
+                    grid[i][j] = 0; // Vacío
                 }
             }
         }
-        
-        // Laberinto estilo espiral para nivel 3
-        for (int i = 2; i < height-2; i++) {
-            grid[i][3] = 1;
-            grid[i][width-4] = 1;
-        }
-        for (int j = 3; j < width-3; j++) {
-            grid[3][j] = 1;
-            grid[height-4][j] = 1;
-        }
-        
-        // Crear aberturas estratégicas
-        grid[height/2][3] = 0;
-        grid[height/2][width-4] = 0;
-        grid[3][width/2] = 0;
-        grid[height-4][width/2] = 0;
     }
     
     public int getWidth() {

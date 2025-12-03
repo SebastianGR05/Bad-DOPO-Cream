@@ -12,7 +12,7 @@ import java.util.HashMap;
  */
 public abstract class LevelPanel extends JPanel {
     protected Game game;
-    protected final int CELL_SIZE = 20;
+    protected final int CELL_SIZE = 30; // Tamaño de 30 píxeles por celda
     protected HashMap<String, Image> images;
     protected boolean useImages = true;
     
@@ -49,7 +49,7 @@ public abstract class LevelPanel extends JPanel {
             images.put("pineapple", loadImage("/images/fruits/pineapple.png"));
             images.put("cherry", loadImage("/images/fruits/cherry.png"));
             
-            // Enemigos 
+            // Enemigos - cargar todos para evitar problemas
             images.put("troll", loadImage("/images/enemies/troll.gif"));
             images.put("pot", loadImage("/images/enemies/pot.png"));
             images.put("squid", loadImage("/images/enemies/orangeSquid.png"));
@@ -76,6 +76,7 @@ public abstract class LevelPanel extends JPanel {
             return null;
         }
     }
+    
     
     @Override
     protected void paintComponent(Graphics g) {
