@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 /**
  * Clase principal que maneja toda la lógica del juego para los tres niveles
+ * CORRECCIÓN: Posición inicial del enemigo en nivel 3 corregida
  */
 public class Game {
     private Board board;
@@ -37,14 +38,27 @@ public class Game {
         // Obtener la matriz del nivel
         int[][] levelMatrix = getLevelMatrix(level);
         
-        // Recorrer la matriz y crear entidades según los valores
+        // CORRECCIÓN: Primero crear al jugador, luego los enemigos
+        // Paso 1: Buscar y crear al jugador primero
+        for (int y = 0; y < 16; y++) {
+            for (int x = 0; x < 16; x++) {
+                int value = levelMatrix[y][x];
+                if (value == 3) { // Jugador
+                    player = new IceCream(x, y, playerFlavor);
+                    System.out.println("Jugador creado en (" + x + "," + y + ")");
+                    break;
+                }
+            }
+            if (player != null) break;
+        }
+        
+        // Paso 2: Crear enemigos y frutas (ahora el jugador ya existe)
         for (int y = 0; y < 16; y++) {
             for (int x = 0; x < 16; x++) {
                 int value = levelMatrix[y][x];
                 
                 switch(value) {
-                    case 3: // Jugador
-                        player = new IceCream(x, y, playerFlavor);
+                    case 3: // Jugador ya creado, saltar
                         break;
                     case 4: // Enemigo
                         createEnemy(x, y, level);
@@ -146,9 +160,9 @@ public class Game {
                     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
                     {1,8,0,0,7,0,0,0,0,0,0,7,0,0,8,1},
                     {1,0,2,2,0,2,2,2,2,2,2,0,2,2,0,1},
-                    {1,4,2,2,0,2,2,2,2,2,2,0,2,2,0,1},
+                    {1,0,2,2,0,2,2,2,2,2,2,0,2,2,0,1},
                     {1,7,0,0,0,0,0,0,0,0,0,0,0,0,7,1},
-                    {1,0,2,2,0,8,0,0,0,0,8,0,2,2,0,1},
+                    {1,0,2,2,0,8,0,4,0,0,8,0,2,2,0,1},
                     {1,0,2,2,0,0,1,1,1,1,0,0,2,2,0,1},
                     {1,0,2,2,0,0,1,1,1,1,0,0,2,2,0,1},
                     {1,0,2,2,0,0,1,1,1,1,0,0,2,2,0,1},

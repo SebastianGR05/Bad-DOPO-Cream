@@ -2,12 +2,11 @@ package Domain;
 
 /**
  * Enemigo Calamar Naranja - Persigue al jugador Y puede romper bloques de hielo
- * Este es el enemigo más difícil del juego porque combina la persecución
- * activa con la habilidad de destruir las defensas del jugador.
+ * CORRECCIÓN: Ahora se mueve correctamente después de romper bloques
  */
 public class OrangeSquid extends Enemy {
     private IceCream target;
-    private Board board; // Necesita referencia al tablero para romper bloques
+    private Board board;
     
     public OrangeSquid(int x, int y) {
         super(x, y, "SQUID");
@@ -32,20 +31,23 @@ public class OrangeSquid extends Enemy {
         int currentX = position.getX();
         int currentY = position.getY();
         
+        
         int deltaX = playerX - currentX;
         int deltaY = playerY - currentY;
         
         int newX = currentX;
         int newY = currentY;
         
-        // Determinar dirección de movimiento (igual que la maceta)
+        // Determinar dirección de movimiento (priorizar eje con mayor distancia)
         if (Math.abs(deltaX) > Math.abs(deltaY)) {
+            // Moverse horizontalmente
             if (deltaX > 0) {
                 newX++;
             } else if (deltaX < 0) {
                 newX--;
             }
         } else {
+            // Moverse verticalmente
             if (deltaY > 0) {
                 newY++;
             } else if (deltaY < 0) {
@@ -53,28 +55,31 @@ public class OrangeSquid extends Enemy {
             }
         }
         
-        // Si hay un bloque de hielo en el camino, romperlo
+        // CORRECCIÓN: Si hay un bloque de hielo, romperlo pero SEGUIR intentando moverse
         if (board.hasIceBlock(newX, newY)) {
             destroyIceBlockAt(newX, newY);
-            // No moverse este turno, solo romper el bloque
-            return;
+            // NO hacer return aquí, continuar para intentar moverse
         }
         
-        // Moverse si la posición es válida
-        if (board.isValidPosition(newX, newY) && !board.hasWall(newX, newY)) {
+        // Intentar moverse si la posición es válida y no hay obstáculos
+        if (board.isValidPosition(newX, newY) && 
+            !board.hasWall(newX, newY) && 
+            !board.hasIceBlock(newX, newY)) {
             move(newX, newY);
         } else {
-            // Intentar movimiento alternativo
+            // Si no puede moverse en la dirección principal, intentar alternativa
             newX = currentX;
             newY = currentY;
             
             if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                // Intentar moverse verticalmente
                 if (deltaY > 0) {
                     newY++;
                 } else if (deltaY < 0) {
                     newY--;
                 }
             } else {
+                // Intentar moverse horizontalmente
                 if (deltaX > 0) {
                     newX++;
                 } else if (deltaX < 0) {
@@ -85,10 +90,13 @@ public class OrangeSquid extends Enemy {
             // Si hay bloque en la dirección alternativa, romperlo
             if (board.hasIceBlock(newX, newY)) {
                 destroyIceBlockAt(newX, newY);
-                return;
+                // Continuar para intentar moverse
             }
             
-            if (board.isValidPosition(newX, newY) && !board.hasWall(newX, newY)) {
+            // Intentar el movimiento alternativo
+            if (board.isValidPosition(newX, newY) && 
+                !board.hasWall(newX, newY) && 
+                !board.hasIceBlock(newX, newY)) {
                 move(newX, newY);
             }
         }

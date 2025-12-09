@@ -257,20 +257,8 @@ public class IceCreamSelectionMenu extends JFrame {
             
             // Dibujar imagen del helado
             if (image != null) {
-                int imageSize = 120;
-                int x = (getWidth() - imageSize) / 2;
-                int y = 20;
-                g.drawImage(image, x, y, imageSize, imageSize, this);
+                g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
             
-            }
-            
-            // Indicador de selección
-            if (selected) {
-                g.setColor(Color.GREEN);
-                g.setFont(new Font("Arial", Font.BOLD, 24));
-                String check = "✓";
-                int checkWidth = g.getFontMetrics().stringWidth(check);
-                g.drawString(check, (getWidth() - checkWidth) / 2, getHeight() - 5);
             }
         }
         

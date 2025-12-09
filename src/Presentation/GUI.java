@@ -11,7 +11,7 @@ import java.awt.event.*;
 public class GUI extends JFrame {
     
     private Game game;
-    private GamePanel gamePanel;
+    private Level1Panel gamePanel;
     
     // Componentes del menú
     private JMenuBar menuBar;
@@ -102,7 +102,7 @@ public class GUI extends JFrame {
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.setBackground(Color.DARK_GRAY);
         
-        gamePanel = new GamePanel(game);
+        gamePanel = new Level1Panel(game);
         gamePanel.setFocusable(true);
         
         centerPanel.add(gamePanel);
