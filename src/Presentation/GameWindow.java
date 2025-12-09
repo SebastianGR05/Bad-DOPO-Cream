@@ -1,6 +1,6 @@
 package Presentation;
 
-import Domain.Game;
+import Domain.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -282,10 +282,17 @@ public class GameWindow extends JFrame {
         
         if (option == 0) { // Siguiente nivel
             if (levelNumber < 3) {
-                Game newGame = new Game(levelNumber + 1, game.getPlayer().getFlavor());
-                GameWindow newWindow = new GameWindow(newGame, levelNumber + 1);
-                newWindow.setVisible(true);
-                dispose();
+                try {
+                    Game newGame = new Game(levelNumber + 1, game.getPlayer().getFlavor());
+                    GameWindow newWindow = new GameWindow(newGame, levelNumber + 1);
+                    newWindow.setVisible(true);
+                    dispose();
+                } catch (BadDopoCreamException e) {
+                    JOptionPane.showMessageDialog(this,
+                        "Error al cargar el siguiente nivel: " + e.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                }
             } else {
                 // Completó todos los niveles
                 JOptionPane.showMessageDialog(this, 

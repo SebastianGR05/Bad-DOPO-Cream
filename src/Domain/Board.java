@@ -9,11 +9,11 @@ import java.util.ArrayList;
 public class Board {
     private int width;
     private int height;
-    private int[][] grid; // 0=vacío, 1=pared, 2=bloque hielo
+    private int[][] grid;
     private ArrayList<IceBlock> iceBlocks;
     private int currentLevel;
     
-    public Board(int width, int height) {
+    public Board(int width, int height) throws BadDopoCreamException {
         // Usar tamaño fijo de 16x16 para todos los niveles
         this.width = 16;
         this.height = 16;
@@ -25,26 +25,35 @@ public class Board {
     
     /**
      * Constructor alternativo que permite especificar el nivel
+     * @throws BadDopoCreamException si el nivel es inválido
      */
-    public Board(int width, int height, int level) {
+    public Board(int width, int height, int level) throws BadDopoCreamException {
+        if (level < 1 || level > 3) {
+            throw new BadDopoCreamException(BadDopoCreamException.INVALID_LEVEL + ": " + level);
+        }
+        
         this.width = 16;
         this.height = 16;
         this.grid = new int[this.height][this.width];
         this.iceBlocks = new ArrayList<>();
         this.currentLevel = level;
         
-        switch(level) {
-            case 1:
-                createLevel1();
-                break;
-            case 2:
-                createLevel2();
-                break;
-            case 3:
-                createLevel3();
-                break;
-            default:
-                createLevel1();
+        try {
+            switch(level) {
+                case 1:
+                    createLevel1();
+                    break;
+                case 2:
+                    createLevel2();
+                    break;
+                case 3:
+                    createLevel3();
+                    break;
+                default:
+                    throw new BadDopoCreamException(BadDopoCreamException.INVALID_LEVEL);
+            }
+        } catch (Exception e) {
+            throw new BadDopoCreamException(BadDopoCreamException.LEVEL_NOT_LOADED + " (Nivel " + level + ")", e);
         }
     }
     
@@ -188,18 +197,34 @@ public class Board {
     
     /**
      * Crea un bloque de hielo en la posición especificada
+     * @throws BadDopoCreamException si la posición es inválida o ya hay un bloque
      */
-    public void createIceBlock(int x, int y) {
-        if (isValidPosition(x, y) && !hasWall(x, y) && !hasIceBlock(x, y)) {
-            IceBlock newBlock = new IceBlock(x, y);
-            iceBlocks.add(newBlock);
+    public void createIceBlock(int x, int y) throws BadDopoCreamException {
+        if (!isValidPosition(x, y)) {
+            throw new BadDopoCreamException(BadDopoCreamException.INVALID_POSITION + ": (" + x + "," + y + ")");
         }
+        
+        if (hasWall(x, y)) {
+            throw new BadDopoCreamException(BadDopoCreamException.CANNOT_CREATE_ICE + ": hay una pared");
+        }
+        
+        if (hasIceBlock(x, y)) {
+            throw new BadDopoCreamException(BadDopoCreamException.ICE_BLOCK_EXISTS);
+        }
+        
+        IceBlock newBlock = new IceBlock(x, y);
+        iceBlocks.add(newBlock);
     }
     
     /**
      * Destruye bloques de hielo en efecto dominó en una dirección
+     * @throws BadDopoCreamException si la dirección o posición son inválidas
      */
-    public void destroyIceBlocks(int startX, int startY, String direction) {
+    public void destroyIceBlocks(int startX, int startY, String direction) throws BadDopoCreamException {
+        if (!isValidPosition(startX, startY)) {
+            throw new BadDopoCreamException(BadDopoCreamException.INVALID_POSITION);
+        }
+        
         int dx = 0, dy = 0;
         
         switch(direction) {
@@ -207,6 +232,8 @@ public class Board {
             case "DOWN": dy = 1; break;
             case "LEFT": dx = -1; break;
             case "RIGHT": dx = 1; break;
+            default:
+                throw new BadDopoCreamException(BadDopoCreamException.INVALID_MOVE + ": dirección desconocida");
         }
         
         int x = startX + dx;

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 /**
  * Clase principal que maneja toda la lógica del juego para los tres niveles
- * CORRECCIÓN: Posición inicial del enemigo en nivel 3 corregida
  */
 public class Game {
     private Board board;
@@ -20,7 +19,17 @@ public class Game {
     private int currentLevel;
     private String playerFlavor;
     
-    public Game(int level, String flavor) {
+    public Game(int level, String flavor) throws BadDopoCreamException {
+        // Validar nivel
+        if (level < 1 || level > 3) {
+            throw new BadDopoCreamException(BadDopoCreamException.INVALID_LEVEL + ": " + level);
+        }
+        
+        // Validar sabor
+        if (flavor == null || (!flavor.equals("VANILLA") && !flavor.equals("STRAWBERRY") && !flavor.equals("CHOCOLATE"))) {
+            throw new BadDopoCreamException(BadDopoCreamException.INVALID_FLAVOR + ": " + flavor);
+        }
+        
         this.currentLevel = level;
         this.playerFlavor = flavor;
         board = new Board(16, 16, level);
@@ -30,15 +39,15 @@ public class Game {
     
     /**
      * Inicializa el nivel usando la matriz correspondiente
+     * @throws BadDopoCreamException si hay error al inicializar
      */
-    private void initializeLevel(int level) {
+    private void initializeLevel(int level) throws BadDopoCreamException {
         enemies = new ArrayList<>();
         fruits = new ArrayList<>();
         
         // Obtener la matriz del nivel
         int[][] levelMatrix = getLevelMatrix(level);
         
-        // CORRECCIÓN: Primero crear al jugador, luego los enemigos
         // Paso 1: Buscar y crear al jugador primero
         for (int y = 0; y < 16; y++) {
             for (int x = 0; x < 16; x++) {
@@ -52,29 +61,37 @@ public class Game {
             if (player != null) break;
         }
         
+        if (player == null) {
+            throw new BadDopoCreamException(BadDopoCreamException.LEVEL_NOT_LOADED + ": No se encontró posición del jugador");
+        }
+        
         // Paso 2: Crear enemigos y frutas (ahora el jugador ya existe)
         for (int y = 0; y < 16; y++) {
             for (int x = 0; x < 16; x++) {
                 int value = levelMatrix[y][x];
                 
-                switch(value) {
-                    case 3: // Jugador ya creado, saltar
-                        break;
-                    case 4: // Enemigo
-                        createEnemy(x, y, level);
-                        break;
-                    case 5: // Banana
-                        fruits.add(new Banana(x, y));
-                        break;
-                    case 6: // Uvas
-                        fruits.add(new Grape(x, y));
-                        break;
-                    case 7: // Piña
-                        fruits.add(new Pineapple(x, y));
-                        break;
-                    case 8: // Cereza
-                        fruits.add(new Cherry(x, y));
-                        break;
+                try {
+                    switch(value) {
+                        case 3: // Jugador ya creado, saltar
+                            break;
+                        case 4: // Enemigo
+                            createEnemy(x, y, level);
+                            break;
+                        case 5: // Banana
+                            fruits.add(new Banana(x, y));
+                            break;
+                        case 6: // Uvas
+                            fruits.add(new Grape(x, y));
+                            break;
+                        case 7: // Piña
+                            fruits.add(new Pineapple(x, y));
+                            break;
+                        case 8: // Cereza
+                            fruits.add(new Cherry(x, y));
+                            break;
+                    }
+                } catch (Exception e) {
+                    throw new BadDopoCreamException(BadDopoCreamException.LEVEL_NOT_LOADED + ": Error creando elementos", e);
                 }
             }
         }
@@ -92,30 +109,38 @@ public class Game {
     
     /**
      * Crea el enemigo correspondiente al nivel
+     * @throws BadDopoCreamException si hay error al crear enemigo
      */
-    private void createEnemy(int x, int y, int level) {
-        switch(level) {
-            case 1:
-                enemies.add(new Troll(x, y));
-                break;
-            case 2:
-                Pot pot = new Pot(x, y);
-                pot.setTarget(player);
-                enemies.add(pot);
-                break;
-            case 3:
-                OrangeSquid squid = new OrangeSquid(x, y);
-                squid.setTarget(player);
-                squid.setBoard(board);
-                enemies.add(squid);
-                break;
+    private void createEnemy(int x, int y, int level) throws BadDopoCreamException {
+        try {
+            switch(level) {
+                case 1:
+                    enemies.add(new Troll(x, y));
+                    break;
+                case 2:
+                    Pot pot = new Pot(x, y);
+                    pot.setTarget(player);
+                    enemies.add(pot);
+                    break;
+                case 3:
+                    OrangeSquid squid = new OrangeSquid(x, y);
+                    squid.setTarget(player);
+                    squid.setBoard(board);
+                    enemies.add(squid);
+                    break;
+                default:
+                    throw new BadDopoCreamException(BadDopoCreamException.INVALID_ENEMY_TYPE);
+            }
+        } catch (Exception e) {
+            throw new BadDopoCreamException(BadDopoCreamException.ENEMY_CREATION_ERROR + " en nivel " + level, e);
         }
     }
     
     /**
      * Obtiene la matriz del nivel
+     * @throws BadDopoCreamException si el nivel es inválido
      */
-    private int[][] getLevelMatrix(int level) {
+    private int[][] getLevelMatrix(int level) throws BadDopoCreamException {
         switch(level) {
             case 1:
                 return new int[][] {
@@ -175,10 +200,14 @@ public class Game {
                     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
                 };
             default:
-                return getLevelMatrix(1);
+                throw new BadDopoCreamException(BadDopoCreamException.INVALID_LEVEL + ": " + level);
         }
     }
     
+    /**
+     * Mueve al jugador en una dirección
+     * @throws BadDopoCreamException si el juego ya terminó
+     */
     public void movePlayer(String direction) {
         if (paused || gameLost || gameWon) {
             return;
@@ -207,6 +236,9 @@ public class Game {
         }
     }
     
+    /**
+     * Maneja la creación o destrucción de bloques de hielo
+     */
     public void handleIceBlock() {
         if (paused || gameLost || gameWon) {
             return;
@@ -226,11 +258,17 @@ public class Game {
             case "RIGHT": targetX++; break;
         }
         
-        if (board.hasIceBlock(targetX, targetY)) {
-            board.destroyIceBlocks(x, y, direction);
-        } else if (board.isValidPosition(targetX, targetY) && 
-                   !board.hasWall(targetX, targetY)) {
-            board.createIceBlock(targetX, targetY);
+        try {
+            if (board.hasIceBlock(targetX, targetY)) {
+                board.destroyIceBlocks(x, y, direction);
+            } else if (board.isValidPosition(targetX, targetY) && 
+                       !board.hasWall(targetX, targetY)) {
+                board.createIceBlock(targetX, targetY);
+            }
+        } catch (BadDopoCreamException e) {
+            // Silenciosamente ignorar errores de bloques de hielo en el juego
+            // (ya están loggeados por la excepción)
+            System.err.println("Error con bloque de hielo: " + e.getMessage());
         }
     }
     
@@ -341,7 +379,11 @@ public class Game {
     }
     
     public void restart() {
-        board.clearAllIceBlocks();
-        initializeLevel(currentLevel);
+        try {
+            board.clearAllIceBlocks();
+            initializeLevel(currentLevel);
+        } catch (BadDopoCreamException e) {
+            System.err.println("Error al reiniciar: " + e.getMessage());
+        }
     }
 }

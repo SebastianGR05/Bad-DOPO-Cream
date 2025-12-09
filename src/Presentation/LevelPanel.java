@@ -8,7 +8,6 @@ import java.util.HashMap;
 
 /**
  * Clase base abstracta para todos los paneles de nivel
- * CORRECCIÓN: Ahora el fondo se ve correctamente sin ser cubierto por el tablero
  */
 public abstract class LevelPanel extends JPanel {
     protected Game game;
@@ -23,13 +22,19 @@ public abstract class LevelPanel extends JPanel {
             game.getBoard().getWidth() * CELL_SIZE, 
             game.getBoard().getHeight() * CELL_SIZE
         ));
-        loadCommonImages();
+        try {
+            loadCommonImages();
+        } catch (BadDopoCreamException e) {
+            System.err.println("Error fatal cargando imágenes: " + e.getMessage());
+            useImages = false;
+        }
     }
     
     /**
      * Carga las imágenes comunes a todos los niveles
+     * @throws BadDopoCreamException si hay error al cargar imágenes
      */
-    private void loadCommonImages() {
+    private void loadCommonImages() throws BadDopoCreamException {
         try {
             images.put("floor", loadImage("/images/levels/floor.png"));
             images.put("wall", loadImage("/images/blocks/wall.png"));
@@ -53,18 +58,28 @@ public abstract class LevelPanel extends JPanel {
             images.put("iglu", loadImage("/images/levels/iglu.png"));
             
             System.out.println("Imágenes comunes cargadas correctamente");
-        } catch (Exception e) {
+        } catch (BadDopoCreamException e) {
             System.err.println("Error cargando imágenes comunes: " + e.getMessage());
             useImages = false;
+            throw e;
         }
     }
     
-    protected Image loadImage(String path) {
+    /**
+     * Carga una imagen desde un path
+     * @param path Ruta de la imagen
+     * @return La imagen cargada
+     * @throws BadDopoCreamException si no se puede cargar la imagen
+     */
+    protected Image loadImage(String path) throws BadDopoCreamException {
         try {
-            return ImageIO.read(getClass().getResourceAsStream(path));
+            Image img = ImageIO.read(getClass().getResourceAsStream(path));
+            if (img == null) {
+                throw new BadDopoCreamException(BadDopoCreamException.IMAGE_LOAD_ERROR + ": " + path);
+            }
+            return img;
         } catch (Exception e) {
-            System.err.println("No se pudo cargar: " + path);
-            return null;
+            throw new BadDopoCreamException(BadDopoCreamException.RESOURCE_NOT_FOUND + ": " + path, e);
         }
     }
     
@@ -98,7 +113,7 @@ public abstract class LevelPanel extends JPanel {
     }
     
     /**
-     * CORRECCIÓN: Dibuja todo el tablero (piso y paredes)
+     * Dibuja todo el tablero (piso y paredes)
      */
     protected void drawBoard(Graphics g) {
         Board board = game.getBoard();

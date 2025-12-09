@@ -1,6 +1,6 @@
 package Presentation;
 
-import Domain.Game;
+import Domain.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -264,13 +264,25 @@ public class LevelSelectionMenu extends JFrame {
         });
     }
     
+    /**
+     * Inicia el nivel seleccionado
+     * Maneja BadDopoCreamException si hay error al crear el juego
+     */
     private void startLevel(int levelNumber) {
-        // Crear el juego con el nivel y sabor seleccionados
-        Game game = new Game(levelNumber, iceCreamFlavor);
-        
-        // Crear la ventana del juego
-        GameWindow gameWindow = new GameWindow(game, levelNumber);
-        gameWindow.setVisible(true);
-        dispose();
+        try {
+            // Crear el juego con el nivel y sabor seleccionados
+            Game game = new Game(levelNumber, iceCreamFlavor);
+            
+            // Crear la ventana del juego
+            GameWindow gameWindow = new GameWindow(game, levelNumber);
+            gameWindow.setVisible(true);
+            dispose();
+        } catch (BadDopoCreamException e) {
+            JOptionPane.showMessageDialog(this,
+                "Error al iniciar el nivel " + levelNumber + ":\n" + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+            System.err.println("Error creando nivel: " + e.getMessage());
+        }
     }
 }
