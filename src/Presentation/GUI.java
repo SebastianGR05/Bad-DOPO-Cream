@@ -231,7 +231,7 @@ public class GUI extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 int confirm = JOptionPane.showConfirmDialog(GUI.this,
                     "¿Reiniciar el juego? Se perderá el progreso actual.",
-                    "Reiniciar",
+                    "",
                     JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
                     restart();
@@ -472,7 +472,7 @@ public class GUI extends JFrame {
     private void exit() {
         int confirmation = JOptionPane.showConfirmDialog(this, 
             "¿Desea salir del juego?", 
-            "Confirmar Salida", 
+            "", 
             JOptionPane.YES_NO_OPTION);
         if (confirmation == JOptionPane.YES_OPTION) {
             if (gameTimer != null) gameTimer.stop();

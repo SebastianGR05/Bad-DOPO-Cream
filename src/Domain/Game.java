@@ -18,6 +18,8 @@ public class Game {
     private boolean paused;
     private int currentLevel;
     private String playerFlavor;
+    private long pausedTime;      // Tiempo total pausado
+    private long lastPauseStart;  // Momento en que se pausó
     
     public Game(int level, String flavor) throws BadDopoCreamException {
         // Validar nivel
@@ -32,6 +34,8 @@ public class Game {
         
         this.currentLevel = level;
         this.playerFlavor = flavor;
+        this.pausedTime = 0;
+        this.lastPauseStart = 0;
         board = new Board(16, 16, level);
         initializeLevel(level);
         this.paused = false;
@@ -54,44 +58,36 @@ public class Game {
                 int value = levelMatrix[y][x];
                 if (value == 3) { // Jugador
                     player = new IceCream(x, y, playerFlavor);
-                    System.out.println("Jugador creado en (" + x + "," + y + ")");
                     break;
                 }
             }
-            if (player != null) break;
-        }
-        
-        if (player == null) {
-            throw new BadDopoCreamException(BadDopoCreamException.LEVEL_NOT_LOADED + ": No se encontró posición del jugador");
+            if (player != null) { 
+            	break;
+            }
         }
         
         // Paso 2: Crear enemigos y frutas (ahora el jugador ya existe)
         for (int y = 0; y < 16; y++) {
             for (int x = 0; x < 16; x++) {
                 int value = levelMatrix[y][x];
-                
-                try {
-                    switch(value) {
-                        case 3: // Jugador ya creado, saltar
-                            break;
-                        case 4: // Enemigo
-                            createEnemy(x, y, level);
-                            break;
-                        case 5: // Banana
-                            fruits.add(new Banana(x, y));
-                            break;
-                        case 6: // Uvas
-                            fruits.add(new Grape(x, y));
-                            break;
-                        case 7: // Piña
-                            fruits.add(new Pineapple(x, y));
-                            break;
-                        case 8: // Cereza
-                            fruits.add(new Cherry(x, y));
-                            break;
-                    }
-                } catch (Exception e) {
-                    throw new BadDopoCreamException(BadDopoCreamException.LEVEL_NOT_LOADED + ": Error creando elementos", e);
+                switch(value) {
+                    case 3: // Jugador ya creado, saltar
+                        break;
+                    case 4: // Enemigo
+                        createEnemy(x, y, level);
+                        break;
+                    case 5: // Banana
+                        fruits.add(new Banana(x, y));
+                        break;
+                    case 6: // Uvas
+                        fruits.add(new Grape(x, y));
+                        break;
+                    case 7: // Piña
+                        fruits.add(new Pineapple(x, y));
+                        break;
+                    case 8: // Cereza
+                        fruits.add(new Cherry(x, y));
+                        break;
                 }
             }
         }
@@ -100,11 +96,7 @@ public class Game {
         gameWon = false;
         gameLost = false;
         startTime = System.currentTimeMillis();
-        
-        System.out.println("Nivel " + level + " inicializado:");
-        System.out.println("- Jugador en: (" + player.getPosition().getX() + ", " + player.getPosition().getY() + ")");
-        System.out.println("- Enemigos: " + enemies.size());
-        System.out.println("- Frutas: " + fruits.size());
+        pausedTime = 0;  // INICIALIZAR tiempo pausado
     }
     
     /**
@@ -112,27 +104,21 @@ public class Game {
      * @throws BadDopoCreamException si hay error al crear enemigo
      */
     private void createEnemy(int x, int y, int level) throws BadDopoCreamException {
-        try {
-            switch(level) {
-                case 1:
-                    enemies.add(new Troll(x, y));
-                    break;
-                case 2:
-                    Pot pot = new Pot(x, y);
-                    pot.setTarget(player);
-                    enemies.add(pot);
-                    break;
-                case 3:
-                    OrangeSquid squid = new OrangeSquid(x, y);
-                    squid.setTarget(player);
-                    squid.setBoard(board);
-                    enemies.add(squid);
-                    break;
-                default:
-                    throw new BadDopoCreamException(BadDopoCreamException.INVALID_ENEMY_TYPE);
-            }
-        } catch (Exception e) {
-            throw new BadDopoCreamException(BadDopoCreamException.ENEMY_CREATION_ERROR + " en nivel " + level, e);
+        switch(level) {
+            case 1:
+                enemies.add(new Troll(x, y));
+                break;
+            case 2:
+                Pot pot = new Pot(x, y);
+                pot.setTarget(player);
+                enemies.add(pot);
+                break;
+            case 3:
+                OrangeSquid squid = new OrangeSquid(x, y);
+                squid.setTarget(player);
+                squid.setBoard(board);
+                enemies.add(squid);
+                break;
         }
     }
     
@@ -267,7 +253,6 @@ public class Game {
             }
         } catch (BadDopoCreamException e) {
             // Silenciosamente ignorar errores de bloques de hielo en el juego
-            // (ya están loggeados por la excepción)
             System.err.println("Error con bloque de hielo: " + e.getMessage());
         }
     }
@@ -311,7 +296,7 @@ public class Game {
         }
         
         long currentTime = System.currentTimeMillis();
-        if (currentTime - startTime >= TIME_LIMIT) {
+        if (currentTime - startTime - pausedTime >= TIME_LIMIT) {
             gameLost = true;
             return;
         }
@@ -333,7 +318,16 @@ public class Game {
     }
     
     public void togglePause() {
-        paused = !paused;
+        if (paused) {
+            // Reanudar: calcular cuánto tiempo estuvo pausado
+            long pauseDuration = System.currentTimeMillis() - lastPauseStart;
+            pausedTime += pauseDuration;
+            paused = false;
+        } else {
+            // Pausar: guardar el momento actual
+            lastPauseStart = System.currentTimeMillis();
+            paused = true;
+        }
     }
     
     public boolean isPaused() {
@@ -365,7 +359,12 @@ public class Game {
     }
     
     public long getTimeRemaining() {
-        long elapsed = System.currentTimeMillis() - startTime;
+        long elapsed = System.currentTimeMillis() - startTime - pausedTime;
+        // Si está pausado actualmente, no contar el tiempo desde que se pausó
+        if (paused) {
+            long currentPauseDuration = System.currentTimeMillis() - lastPauseStart;
+            elapsed -= currentPauseDuration;
+        }
         long remaining = TIME_LIMIT - elapsed;
         return Math.max(0, remaining);
     }
@@ -380,7 +379,13 @@ public class Game {
     
     public void restart() {
         try {
-            board.clearAllIceBlocks();
+        	//Eliminamos jugador, frutas y enemigos
+        	enemies.clear();
+        	fruits.clear();
+        	player = null;
+            // Recreamos el tablero
+            board = new Board(16, 16, currentLevel);
+            // Reinicio de nivel
             initializeLevel(currentLevel);
         } catch (BadDopoCreamException e) {
             System.err.println("Error al reiniciar: " + e.getMessage());

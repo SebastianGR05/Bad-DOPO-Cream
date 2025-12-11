@@ -26,7 +26,6 @@ public class GameWindow extends JFrame {
     private Timer updateTimer;
     
     public GameWindow(Game game, int levelNumber) {
-        super("Bad DOPO-Cream - Nivel " + levelNumber);
         this.game = game;
         this.levelNumber = levelNumber;
         prepareElements();
@@ -85,7 +84,7 @@ public class GameWindow extends JFrame {
         panel.setBackground(new Color(50, 50, 100));
         panel.setPreferredSize(new Dimension(800, 60));
         
-        lblLevel = new JLabel("Nivel " + levelNumber, SwingConstants.CENTER);
+        lblLevel = new JLabel("Level " + levelNumber, SwingConstants.CENTER);
         lblLevel.setForeground(Color.WHITE);
         lblLevel.setFont(new Font("Arial", Font.BOLD, 20));
         
@@ -93,11 +92,11 @@ public class GameWindow extends JFrame {
         lblFruits.setForeground(Color.WHITE);
         lblFruits.setFont(new Font("Arial", Font.BOLD, 20));
         
-        lblTime = new JLabel("Tiempo: 3:00", SwingConstants.CENTER);
+        lblTime = new JLabel("Time: 3:00", SwingConstants.CENTER);
         lblTime.setForeground(Color.WHITE);
         lblTime.setFont(new Font("Arial", Font.BOLD, 20));
         
-        btnPause = new JButton("Pausar (P)");
+        btnPause = new JButton("Pause (P)");
         btnPause.setFont(new Font("Arial", Font.BOLD, 16));
         btnPause.setBackground(new Color(255, 165, 0));
         btnPause.setForeground(Color.WHITE);
@@ -120,7 +119,7 @@ public class GameWindow extends JFrame {
         panel.setPreferredSize(new Dimension(800, 80));
         
         JLabel controls = new JLabel(
-            "<html><center>CONTROLES: Flechas/WASD = Mover  |  ESPACIO = Hielo  |  P/ESC = Pausa  |  R = Reiniciar</center></html>"
+            "<html><center>CONTROLS: WASD = Move  |  ESPACIO = Ice Block  |  P/ESC = Pause  |  R = Restart</center></html>"
         );
         controls.setFont(new Font("Arial", Font.PLAIN, 14));
         panel.add(controls);
@@ -136,8 +135,8 @@ public class GameWindow extends JFrame {
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 int confirm = JOptionPane.showConfirmDialog(GameWindow.this,
-                    "¿Salir del juego? Se perderá el progreso.",
-                    "Confirmar",
+                    "¿Exit the game? Current progress will be lost.",
+                    "",
                     JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
                     stopTimers();
@@ -152,10 +151,10 @@ public class GameWindow extends JFrame {
         btnPause.addActionListener(e -> {
             game.togglePause();
             if (game.isPaused()) {
-                btnPause.setText("Reanudar");
+                btnPause.setText("Resume");
                 btnPause.setBackground(new Color(50, 200, 50));
             } else {
-                btnPause.setText("Pausar (P)");
+                btnPause.setText("Pause (P)");
                 btnPause.setBackground(new Color(255, 165, 0));
             }
             levelPanel.repaint();
@@ -186,18 +185,18 @@ public class GameWindow extends JFrame {
                 else if (key == KeyEvent.VK_P || key == KeyEvent.VK_ESCAPE) {
                     game.togglePause();
                     if (game.isPaused()) {
-                        btnPause.setText("Reanudar");
+                        btnPause.setText("Resume");
                         btnPause.setBackground(new Color(50, 200, 50));
                     } else {
-                        btnPause.setText("Pausar (P)");
+                        btnPause.setText("Pause (P)");
                         btnPause.setBackground(new Color(255, 165, 0));
                     }
                 } 
                 // Reiniciar
                 else if (key == KeyEvent.VK_R) {
                     int confirm = JOptionPane.showConfirmDialog(GameWindow.this,
-                        "¿Reiniciar el nivel? Se perderá el progreso actual.",
-                        "Confirmar Reinicio",
+                        "¿Restart the level? Current progress will be lost.",
+                        "",
                         JOptionPane.YES_NO_OPTION);
                     if (confirm == JOptionPane.YES_OPTION) {
                         restartLevel();
@@ -235,14 +234,14 @@ public class GameWindow extends JFrame {
      */
     private void updateLabels() {
         // Actualizar contador de frutas
-        lblFruits.setText("Frutas: " + game.getPlayer().getFruitsCollected() + 
+        lblFruits.setText("Frutes: " + game.getPlayer().getFruitsCollected() + 
                          "/" + game.getTotalFruits());
         
         // Actualizar tiempo restante
         long timeRemaining = game.getTimeRemaining();
         int minutes = (int) (timeRemaining / 60000);
         int seconds = (int) ((timeRemaining % 60000) / 1000);
-        lblTime.setText(String.format("Tiempo: %d:%02d", minutes, seconds));
+        lblTime.setText(String.format("Time: %d:%02d", minutes, seconds));
         
         // Cambiar color del tiempo si queda poco
         if (timeRemaining < 30000) { // Menos de 30 segundos
@@ -270,14 +269,14 @@ public class GameWindow extends JFrame {
      */
     private void showVictoryDialog() {
         int option = JOptionPane.showOptionDialog(this,
-            "¡Felicidades! ¡Has completado el nivel " + levelNumber + "!\n" +
+            "¡Congratulations! ¡Has completado el nivel " + levelNumber + "!\n" +
             "Frutas recolectadas: " + game.getPlayer().getFruitsCollected() + "/" + game.getTotalFruits() + "\n" +
             "¿Qué deseas hacer?",
             "¡Victoria!",
             JOptionPane.YES_NO_CANCEL_OPTION,
             JOptionPane.INFORMATION_MESSAGE,
             null,
-            new String[]{"Siguiente Nivel", "Reintentar", "Menú Principal"},
+            new String[]{"Next level", "Reintentar", "Menú Principal"},
             "Siguiente Nivel");
         
         if (option == 0) { // Siguiente nivel

@@ -21,7 +21,6 @@ public class MainMenu extends JFrame {
     }
     
     private void prepareElements() {
-        setTitle("Bad DOPO-Cream");
         setSize(900, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -40,32 +39,12 @@ public class MainMenu extends JFrame {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                if (backgroundImage != null) {
-                    g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-                } else {
-                    // Fondo degradado si no hay imagen
-                    GradientPaint gradient = new GradientPaint(
-                        0, 0, new Color(135, 206, 250),
-                        0, getHeight(), new Color(25, 25, 112)
-                    );
-                    Graphics2D g2d = (Graphics2D) g;
-                    g2d.setPaint(gradient);
-                    g2d.fillRect(0, 0, getWidth(), getHeight());
-                    
-                    // Dibujar título si no hay imagen
-                    g2d.setColor(Color.WHITE);
-                    g2d.setFont(new Font("Arial", Font.BOLD, 72));
-                    String title = "Bad DOPO-Cream";
-                    FontMetrics fm = g2d.getFontMetrics();
-                    int titleWidth = fm.stringWidth(title);
-                    g2d.drawString(title, (getWidth() - titleWidth) / 2, 200);
-                }
+                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
             }
         };
         mainPanel.setLayout(null);
         
         // Botón JUGAR (invisible sobre la imagen)
-        // Ajusta estas coordenadas según donde esté el botón en tu imagen
         btnPlay = createInvisibleButton(275, 480, 340, 50);
         mainPanel.add(btnPlay);
         
@@ -92,7 +71,6 @@ public class MainMenu extends JFrame {
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                // Opcional: podrías agregar un efecto visual aquí
                 button.setBorderPainted(false);
             }
             
@@ -119,7 +97,7 @@ public class MainMenu extends JFrame {
         btnExit.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(this,
                 "¿Seguro que deseas salir?",
-                "Confirmar Salida",
+                "",
                 JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
                 System.exit(0);

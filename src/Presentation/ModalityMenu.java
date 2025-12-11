@@ -12,7 +12,7 @@ import javax.imageio.ImageIO;
 public class ModalityMenu extends JFrame {
     
     private JButton btnPvP;
-    private JButton btnPvM;
+    private JButton btnP;
     private JButton btnMvM;
     private JButton btnBack;
     private Image backgroundImage;
@@ -57,21 +57,21 @@ public class ModalityMenu extends JFrame {
         };
         mainPanel.setLayout(null);
         
-        // Título
-        JLabel title = new JLabel("Selecciona la Modalidad");
+        // Titulo
+        JLabel title = new JLabel("Choose the Game Mode");
         title.setFont(new Font("Arial", Font.BOLD, 48));
         title.setForeground(Color.BLACK);
         title.setBounds(150, 80, 600, 60);
         title.setHorizontalAlignment(SwingConstants.CENTER);
         mainPanel.add(title);
         
-        // Botones de modalidades
+        // Botones de modo de juego
         btnPvP = createModalityButton("Player vs Player", 150, 200);
-        btnPvM = createModalityButton("Player vs Machine", 150, 290);
+        btnP = createModalityButton("Player", 150, 290);
         btnMvM = createModalityButton("Machine vs Machine", 150, 380);
         
         mainPanel.add(btnPvP);
-        mainPanel.add(btnPvM);
+        mainPanel.add(btnP);
         mainPanel.add(btnMvM);
         
         
@@ -118,33 +118,11 @@ public class ModalityMenu extends JFrame {
         }
         
         JButton button;
-        if (backButtonImage != null) {
-            // Usar imagen del botón
-            button = new JButton(new ImageIcon(backButtonImage));
-            button.setBounds(370, 500, 160, 60);
-            button.setBorderPainted(false);
-            button.setContentAreaFilled(false);
-        } else {
-            // Botón de texto simple
-            button = new JButton("← Volver");
-            button.setBounds(20, 20, 130, 40);
-            button.setFont(new Font("Arial", Font.BOLD, 16));
-            button.setBackground(new Color(80, 150, 220));
-            button.setForeground(Color.WHITE);
-            button.setBorderPainted(false);
-            
-            button.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    button.setBackground(new Color(100, 170, 240));
-                }
-                
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    button.setBackground(new Color(80, 150, 220));
-                }
-            });
-        }
+        // Usar imagen del boton
+        button = new JButton(new ImageIcon(backButtonImage));
+        button.setBounds(370, 500, 160, 60);
+        button.setBorderPainted(false);
+        button.setContentAreaFilled(false);
         
         button.setFocusPainted(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -154,14 +132,14 @@ public class ModalityMenu extends JFrame {
     
     private void prepareActions() {
         btnPvP.addActionListener(e -> {
-            // Por ahora, PvP no está implementado
+            // PvP no está implementado
             JOptionPane.showMessageDialog(this,
-                "La modalidad Player vs Player estará disponible en una versión futura.\n",
-                "Próximamente",
+                "La modalidad Player vs Player no está disponible.\n",
+                "Aviso",
                 JOptionPane.INFORMATION_MESSAGE);
         });
         
-        btnPvM.addActionListener(e -> {
+        btnP.addActionListener(e -> {
             // Abrir menú de selección de helado
             IceCreamSelectionMenu iceCreamMenu = new IceCreamSelectionMenu();
             iceCreamMenu.setVisible(true);
@@ -169,10 +147,10 @@ public class ModalityMenu extends JFrame {
         });
         
         btnMvM.addActionListener(e -> {
-            // Por ahora, MvM no está implementado
+            // MvM no está implementado
             JOptionPane.showMessageDialog(this,
-                "La modalidad Machine vs Machine estará disponible en una versión futura.\n",
-                "Próximamente",
+                "La modalidad Machine vs Machine está disponible.\n",
+                "Aviso",
                 JOptionPane.INFORMATION_MESSAGE);
         });
         

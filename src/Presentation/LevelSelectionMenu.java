@@ -58,7 +58,7 @@ public class LevelSelectionMenu extends JFrame {
         mainPanel.setLayout(null);
         
         // Título
-        JLabel title = new JLabel("Selecciona el Nivel");
+        JLabel title = new JLabel("Choose the level");
         title.setFont(new Font("Arial", Font.BOLD, 48));
         title.setForeground(Color.WHITE);
         title.setBounds(200, 50, 500, 60);
@@ -67,25 +67,25 @@ public class LevelSelectionMenu extends JFrame {
         
         // Paneles de niveles
         JPanel level1Panel = createLevelPanel(
-            "Nivel 1", 
-            "FÁCIL",
-            "2 Trolls • 8 Uvas • 8 Plátanos",
+            "Level 1", 
+            "EASY",
+            "2 Trolls • 8 Grapes • 8 Bananas",
             150, 150
         );
         mainPanel.add(level1Panel);
         
         JPanel level2Panel = createLevelPanel(
-            "Nivel 2", 
-            "MEDIO",
-            "1 Maceta • 8 Piñas • 8 Plátanos",
+            "Level 2", 
+            "INTERMEDIATE",
+            "1 Pot • 8 Pineapples • 8 Bananas",
             150, 300
         );
         mainPanel.add(level2Panel);
         
         JPanel level3Panel = createLevelPanel(
-            "Nivel 3", 
-            "DIFÍCIL",
-            "1 Calamar • 8 Piñas • 8 Cerezas",
+            "Level 3", 
+            "HARD",
+            "1 Squid • 8 Pineapples • 8 Cherries",
             150, 450
         );
         mainPanel.add(level3Panel);
@@ -138,9 +138,9 @@ public class LevelSelectionMenu extends JFrame {
         
         Color diffColor;
         switch(difficulty) {
-            case "FÁCIL": diffColor = new Color(50, 200, 50); break;
-            case "MEDIO": diffColor = new Color(255, 165, 0); break;
-            case "DIFÍCIL": diffColor = new Color(255, 50, 50); break;
+            case "EASY": diffColor = new Color(50, 200, 50); break;
+            case "INTERMEDIATE": diffColor = new Color(255, 165, 0); break;
+            case "HARD": diffColor = new Color(255, 50, 50); break;
             default: diffColor = Color.BLACK;
         }
         diffLabel.setForeground(diffColor);
@@ -167,31 +167,10 @@ public class LevelSelectionMenu extends JFrame {
         }
         
         JButton button;
-        if (backButtonImage != null) {
-            button = new JButton(new ImageIcon(backButtonImage));
-            button.setBounds(20, 20, 160, 60);
-            button.setBorderPainted(false);
-            button.setContentAreaFilled(false);
-        } else {
-            button = new JButton("← Volver");
-            button.setBounds(20, 20, 120, 40);
-            button.setFont(new Font("Arial", Font.BOLD, 16));
-            button.setBackground(new Color(80, 150, 220));
-            button.setForeground(Color.WHITE);
-            button.setBorderPainted(false);
-            
-            button.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    button.setBackground(new Color(100, 170, 240));
-                }
-                
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    button.setBackground(new Color(80, 150, 220));
-                }
-            });
-        }
+        button = new JButton(new ImageIcon(backButtonImage));
+        button.setBounds(20, 20, 160, 60);
+        button.setBorderPainted(false);
+        button.setContentAreaFilled(false);
         
         button.setFocusPainted(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -266,7 +245,6 @@ public class LevelSelectionMenu extends JFrame {
     
     /**
      * Inicia el nivel seleccionado
-     * Maneja BadDopoCreamException si hay error al crear el juego
      */
     private void startLevel(int levelNumber) {
         try {

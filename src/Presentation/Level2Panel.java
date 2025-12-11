@@ -19,9 +19,7 @@ public class Level2Panel extends LevelPanel {
             int x = enemy.getPosition().getX() * CELL_SIZE;
             int y = enemy.getPosition().getY() * CELL_SIZE;
             
-            if (useImages && images.containsKey("pot") && images.get("pot") != null) {
-                g.drawImage(images.get("pot"), x, y, CELL_SIZE, CELL_SIZE, this);
-            }
+            g.drawImage(images.get("pot"), x, y, CELL_SIZE, CELL_SIZE, this);
         }
     }
 }

@@ -62,8 +62,8 @@ public class IceCreamSelectionMenu extends JFrame {
         mainPanel.setLayout(null);
         
         // Título
-        JLabel title = new JLabel("Elige tu Helado");
-        title.setFont(new Font("Arial", Font.BOLD, 48));
+        JLabel title = new JLabel("Choose your flavor");
+        title.setFont(new Font("Arial", Font.BOLD, 40));
         title.setForeground(Color.BLACK);
         title.setBounds(250, 50, 400, 60);
         title.setHorizontalAlignment(SwingConstants.CENTER);
@@ -95,7 +95,7 @@ public class IceCreamSelectionMenu extends JFrame {
         mainPanel.add(chocolatePanel);
         
         // Botón continuar
-        btnContinue = new JButton("CONTINUAR");
+        btnContinue = new JButton("CONTINUE");
         btnContinue.setBounds(350, 480, 200, 60);
         btnContinue.setFont(new Font("Arial", Font.BOLD, 24));
         btnContinue.setBackground(new Color(50, 200, 50));
@@ -123,31 +123,10 @@ public class IceCreamSelectionMenu extends JFrame {
         }
         
         JButton button;
-        if (backButtonImage != null) {
-            button = new JButton(new ImageIcon(backButtonImage));
-            button.setBounds(20, 20, 160, 60);
-            button.setBorderPainted(false);
-            button.setContentAreaFilled(false);
-        } else {
-            button = new JButton("← Volver");
-            button.setBounds(20, 20, 120, 40);
-            button.setFont(new Font("Arial", Font.BOLD, 16));
-            button.setBackground(new Color(80, 150, 220));
-            button.setForeground(Color.WHITE);
-            button.setBorderPainted(false);
-            
-            button.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    button.setBackground(new Color(100, 170, 240));
-                }
-                
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    button.setBackground(new Color(80, 150, 220));
-                }
-            });
-        }
+        button = new JButton(new ImageIcon(backButtonImage));
+        button.setBounds(20, 20, 160, 60);
+        button.setBorderPainted(false);
+        button.setContentAreaFilled(false);
         
         button.setFocusPainted(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -246,20 +225,10 @@ public class IceCreamSelectionMenu extends JFrame {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            
-            // Fondo del panel
-            if (selected) {
-                g.setColor(new Color(200, 255, 200, 220));
-            } else {
-                g.setColor(new Color(255, 255, 255, 200));
-            }
             g.fillRect(0, 0, getWidth(), getHeight());
             
             // Dibujar imagen del helado
-            if (image != null) {
-                g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
-            
-            }
+            g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
         }
         
     }

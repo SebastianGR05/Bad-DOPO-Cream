@@ -55,7 +55,6 @@ public abstract class LevelPanel extends JPanel {
             images.put("squid", loadImage("/images/enemies/orangeSquid.png"));
             
             images.put("background", loadImage("/images/levels/background.png"));
-            images.put("iglu", loadImage("/images/levels/iglu.png"));
             
             System.out.println("Imágenes comunes cargadas correctamente");
         } catch (BadDopoCreamException e) {
@@ -106,10 +105,8 @@ public abstract class LevelPanel extends JPanel {
      * CORRECCIÓN: Dibuja el fondo una sola vez para toda la pantalla
      */
     protected void drawBackground(Graphics g) {
-        if (useImages && images.containsKey("background") && images.get("background") != null) {
-            // Dibujar la imagen de fondo escalada a toda la pantalla
-            g.drawImage(images.get("background"), 0, 0, getWidth(), getHeight(), this);
-        }
+        // Dibujar la imagen de fondo escalada a toda la pantalla
+        g.drawImage(images.get("background"), 0, 0, getWidth(), getHeight(), this);
     }
     
     /**
@@ -139,15 +136,11 @@ public abstract class LevelPanel extends JPanel {
      * Dibuja el piso (celdas vacías del tablero)
      */
     protected void drawFloor(Graphics g, int x, int y) {
-        if (useImages && images.containsKey("floor") && images.get("floor") != null) {
-            g.drawImage(images.get("floor"), x, y, CELL_SIZE, CELL_SIZE, this);
-        }
+        g.drawImage(images.get("floor"), x, y, CELL_SIZE, CELL_SIZE, this);
     }
     
     protected void drawWall(Graphics g, int x, int y) {
-        if (useImages && images.containsKey("wall") && images.get("wall") != null) {
-            g.drawImage(images.get("wall"), x, y, CELL_SIZE, CELL_SIZE, this);
-        }
+        g.drawImage(images.get("wall"), x, y, CELL_SIZE, CELL_SIZE, this);
     }
     
     protected void drawIceBlocks(Graphics g) {
@@ -156,9 +149,7 @@ public abstract class LevelPanel extends JPanel {
                 int x = block.getPosition().getX() * CELL_SIZE;
                 int y = block.getPosition().getY() * CELL_SIZE;
                 
-                if (useImages && images.containsKey("iceBlock") && images.get("iceBlock") != null) {
-                    g.drawImage(images.get("iceBlock"), x, y, CELL_SIZE, CELL_SIZE, this);
-                }
+                g.drawImage(images.get("iceBlock"), x, y, CELL_SIZE, CELL_SIZE, this);
             }
         }
     }
@@ -173,9 +164,7 @@ public abstract class LevelPanel extends JPanel {
             int y = fruit.getPosition().getY() * CELL_SIZE;
             String type = fruit.getType().toLowerCase();
             
-            if (useImages && images.containsKey(type) && images.get(type) != null) {
-                g.drawImage(images.get(type), x + 5, y + 5, CELL_SIZE - 10, CELL_SIZE - 10, this);
-            }
+            g.drawImage(images.get(type), x + 5, y + 5, CELL_SIZE - 10, CELL_SIZE - 10, this);
         }
     }
     
@@ -189,10 +178,8 @@ public abstract class LevelPanel extends JPanel {
         int y = player.getPosition().getY() * CELL_SIZE;
         
         String flavorKey = player.getFlavor().toLowerCase();
-        
-        if (useImages && images.containsKey(flavorKey) && images.get(flavorKey) != null) {
-            g.drawImage(images.get(flavorKey), x, y, CELL_SIZE, CELL_SIZE, this);
-        }
+
+        g.drawImage(images.get(flavorKey), x, y, CELL_SIZE, CELL_SIZE, this);
     }
     
     

@@ -19,10 +19,8 @@ public class Level1Panel extends LevelPanel {
         for (Enemy enemy : game.getEnemies()) {
             int x = enemy.getPosition().getX() * CELL_SIZE;
             int y = enemy.getPosition().getY() * CELL_SIZE;
-            
-            if (useImages && images.containsKey("troll") && images.get("troll") != null) {
-                g.drawImage(images.get("troll"), x, y, CELL_SIZE, CELL_SIZE, this);
-            }
+
+            g.drawImage(images.get("troll"), x, y, CELL_SIZE, CELL_SIZE, this);
         }
     }
 }
