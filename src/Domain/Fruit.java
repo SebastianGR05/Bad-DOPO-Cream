@@ -7,11 +7,13 @@ public abstract class Fruit {
     protected Position position;
     protected boolean collected;
     protected String type;
+    protected int points;
     
-    public Fruit(int x, int y, String type) {
+    public Fruit(int x, int y, String type, int points) {
         this.position = new Position(x, y);
         this.collected = false;
         this.type = type;
+        this.points = points;
     }
     
     public Position getPosition() {
@@ -28,5 +30,9 @@ public abstract class Fruit {
     
     public String getType() {
         return type;
+    }
+    
+    public int getPoints() {
+    	return points;
     }
 }

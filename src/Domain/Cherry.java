@@ -10,10 +10,10 @@ import java.util.Random;
 public class Cherry extends Fruit {
     private Random random;
     private int teleportCounter;
-    private final int TELEPORT_INTERVAL = 5; // Se teletransporta cada 5 actualizaciones
+    private final int TELEPORT_INTERVAL = 20; // Se teletransporta cada 5 actualizaciones
     
     public Cherry(int x, int y) {
-        super(x, y, "CHERRY");
+        super(x, y, "CHERRY",150);
         this.random = new Random();
         this.teleportCounter = 0;
     }

@@ -12,14 +12,13 @@ public class Pineapple extends Fruit {
     private int moveCounter; // Contador para controlar la frecuencia de movimiento
     
     public Pineapple(int x, int y) {
-        super(x, y, "PINEAPPLE");
+        super(x, y, "PINEAPPLE",200);
         this.random = new Random();
         this.moveCounter = 0;
     }
     
     /**
      * Mueve la piña a una posición adyacente aleatoria si es posible
-     * Este método debe llamarse periódicamente desde el Game
      */
     public void move(Board board) {
         if (collected) {
@@ -44,10 +43,18 @@ public class Pineapple extends Fruit {
         int newY = currentY;
         
         switch(direction) {
-            case 0: newY--; break; // Arriba
-            case 1: newX++; break; // Derecha
-            case 2: newY++; break; // Abajo
-            case 3: newX--; break; // Izquierda
+            case 0: 
+            	newY--; 
+            	break; // Arriba
+            case 1: 
+            	newX++; 
+            	break; // Derecha
+            case 2: 
+            	newY++; 
+            	break; // Abajo
+            case 3: 
+            	newX--; 
+            	break; // Izquierda
         }
         
         // Verificar que la nueva posición sea válida

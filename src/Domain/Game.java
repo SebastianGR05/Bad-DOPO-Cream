@@ -20,6 +20,7 @@ public class Game {
     private String playerFlavor;
     private long pausedTime;      // Tiempo total pausado
     private long lastPauseStart;  // Momento en que se pausó
+    private int maxScore;
     
     public Game(int level, String flavor) throws BadDopoCreamException {
         // Validar nivel
@@ -48,6 +49,7 @@ public class Game {
     private void initializeLevel(int level) throws BadDopoCreamException {
         enemies = new ArrayList<>();
         fruits = new ArrayList<>();
+        maxScore = 0;
         
         // Obtener la matriz del nivel
         int[][] levelMatrix = getLevelMatrix(level);
@@ -266,7 +268,7 @@ public class Game {
                 fruit.getPosition().getX() == x && 
                 fruit.getPosition().getY() == y) {
                 fruit.collect();
-                player.collectFruit();
+                player.collectFruit(fruit.getPoints());
                 
                 if (player.getFruitsCollected() >= totalFruits) {
                     gameWon = true;
@@ -373,6 +375,10 @@ public class Game {
         return totalFruits;
     }
     
+    public int getMaxScore() {
+        return maxScore;
+    }
+    
     public int getCurrentLevel() {
         return currentLevel;
     }
@@ -383,6 +389,8 @@ public class Game {
         	enemies.clear();
         	fruits.clear();
         	player = null;
+        	//Reseteamos la puntuacion
+        	maxScore = 0;
             // Recreamos el tablero
             board = new Board(16, 16, currentLevel);
             // Reinicio de nivel

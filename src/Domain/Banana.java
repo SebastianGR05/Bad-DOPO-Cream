@@ -6,6 +6,6 @@ package Domain;
 public class Banana extends Fruit {
     
     public Banana(int x, int y) {
-        super(x, y, "BANANA");
+        super(x, y, "BANANA",100);
     }
 }

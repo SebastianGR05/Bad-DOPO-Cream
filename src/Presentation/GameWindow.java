@@ -6,8 +6,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 /**
- * Ventana principal del juego que contiene el panel de nivel,
- * la información del juego y los controles
+ * Ventana principal del juego con sistema de puntajes
  */
 public class GameWindow extends JFrame {
     
@@ -15,13 +14,11 @@ public class GameWindow extends JFrame {
     private int levelNumber;
     private LevelPanel levelPanel;
     
-    // Componentes de UI
-    private JLabel lblFruits;
+    private JLabel lblScore;
     private JLabel lblTime;
     private JLabel lblLevel;
     private JButton btnPause;
     
-    // Timers
     private Timer gameTimer;
     private Timer updateTimer;
     
@@ -37,10 +34,8 @@ public class GameWindow extends JFrame {
         setResizable(false);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         
-        // Panel principal
         JPanel mainPanel = new JPanel(new BorderLayout());
         
-        // Panel de información superior
         JPanel infoPanel = createInfoPanel();
         mainPanel.add(infoPanel, BorderLayout.NORTH);
         
@@ -48,7 +43,6 @@ public class GameWindow extends JFrame {
         centerPanel.setBackground(Color.DARK_GRAY);
         GridBagConstraints gbc = new GridBagConstraints();
         
-        // Crear el panel de nivel correspondiente
         switch(levelNumber) {
             case 1:
                 levelPanel = new Level1Panel(game);
@@ -67,7 +61,6 @@ public class GameWindow extends JFrame {
         centerPanel.add(levelPanel, gbc);
         mainPanel.add(centerPanel, BorderLayout.CENTER);
         
-        // Panel de controles inferior
         JPanel controlsPanel = createControlsPanel();
         mainPanel.add(controlsPanel, BorderLayout.SOUTH);
         
@@ -76,9 +69,6 @@ public class GameWindow extends JFrame {
         setLocationRelativeTo(null);
     }
     
-    /**
-     * Crea el panel de información superior con estadísticas del juego
-     */
     private JPanel createInfoPanel() {
         JPanel panel = new JPanel(new GridLayout(1, 4));
         panel.setBackground(new Color(50, 50, 100));
@@ -88,9 +78,10 @@ public class GameWindow extends JFrame {
         lblLevel.setForeground(Color.WHITE);
         lblLevel.setFont(new Font("Arial", Font.BOLD, 20));
         
-        lblFruits = new JLabel("Frutas: 0/" + game.getTotalFruits(), SwingConstants.CENTER);
-        lblFruits.setForeground(Color.WHITE);
-        lblFruits.setFont(new Font("Arial", Font.BOLD, 20));
+        // Cambio: Mostrar puntaje en lugar de frutas
+        lblScore = new JLabel("Score: " + game.getMaxScore(), SwingConstants.CENTER);
+        lblScore.setForeground(Color.YELLOW);
+        lblScore.setFont(new Font("Arial", Font.BOLD, 20));
         
         lblTime = new JLabel("Time: 3:00", SwingConstants.CENTER);
         lblTime.setForeground(Color.WHITE);
@@ -103,16 +94,13 @@ public class GameWindow extends JFrame {
         btnPause.setFocusPainted(false);
         
         panel.add(lblLevel);
-        panel.add(lblFruits);
+        panel.add(lblScore);
         panel.add(lblTime);
         panel.add(btnPause);
         
         return panel;
     }
     
-    /**
-     * Crea el panel de controles inferior con las instrucciones
-     */
     private JPanel createControlsPanel() {
         JPanel panel = new JPanel();
         panel.setBackground(Color.LIGHT_GRAY);
@@ -127,11 +115,7 @@ public class GameWindow extends JFrame {
         return panel;
     }
     
-    /**
-     * Configura todas las acciones de la ventana
-     */
     private void prepareActions() {
-        // Cerrar ventana con confirmación
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 int confirm = JOptionPane.showConfirmDialog(GameWindow.this,
@@ -147,7 +131,6 @@ public class GameWindow extends JFrame {
             }
         });
         
-        // Botón de pausa
         btnPause.addActionListener(e -> {
             game.togglePause();
             if (game.isPaused()) {
@@ -161,13 +144,11 @@ public class GameWindow extends JFrame {
             levelPanel.requestFocusInWindow();
         });
         
-        // Controles del teclado
         levelPanel.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 int key = e.getKeyCode();
                 
-                // Movimiento
                 if (key == KeyEvent.VK_UP || key == KeyEvent.VK_W) {
                     game.movePlayer("UP");
                 } else if (key == KeyEvent.VK_DOWN || key == KeyEvent.VK_S) {
@@ -177,11 +158,9 @@ public class GameWindow extends JFrame {
                 } else if (key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_D) {
                     game.movePlayer("RIGHT");
                 } 
-                // Crear/romper bloques de hielo
                 else if (key == KeyEvent.VK_SPACE) {
                     game.handleIceBlock();
                 } 
-                // Pausa
                 else if (key == KeyEvent.VK_P || key == KeyEvent.VK_ESCAPE) {
                     game.togglePause();
                     if (game.isPaused()) {
@@ -192,7 +171,6 @@ public class GameWindow extends JFrame {
                         btnPause.setBackground(new Color(255, 165, 0));
                     }
                 } 
-                // Reiniciar
                 else if (key == KeyEvent.VK_R) {
                     int confirm = JOptionPane.showConfirmDialog(GameWindow.this,
                         "¿Restart the level? Current progress will be lost.",
@@ -207,15 +185,10 @@ public class GameWindow extends JFrame {
             }
         });
         
-        // Asegurar que el panel tenga el foco para recibir eventos del teclado
         levelPanel.requestFocusInWindow();
     }
     
-    /**
-     * Inicia los timers del juego para actualización y renderizado
-     */
     private void startGameTimers() {
-        // Timer para redibujar el juego (60 FPS = aproximadamente cada 16ms)
         gameTimer = new Timer(16, e -> {
             levelPanel.repaint();
             updateLabels();
@@ -223,37 +196,27 @@ public class GameWindow extends JFrame {
         });
         gameTimer.start();
         
-        // Timer para actualizar la lógica del juego (cada 500ms)
-        // Aquí se mueven los enemigos, frutas especiales, etc.
         updateTimer = new Timer(500, e -> game.update());
         updateTimer.start();
     }
     
-    /**
-     * Actualiza las etiquetas de información en la interfaz
-     */
     private void updateLabels() {
-        // Actualizar contador de frutas
-        lblFruits.setText("Frutes: " + game.getPlayer().getFruitsCollected() + 
-                         "/" + game.getTotalFruits());
+        // Actualizar puntaje
+        lblScore.setText("Score: " + game.getPlayer().getScore());
         
-        // Actualizar tiempo restante
+        // Actualizar tiempo
         long timeRemaining = game.getTimeRemaining();
         int minutes = (int) (timeRemaining / 60000);
         int seconds = (int) ((timeRemaining % 60000) / 1000);
         lblTime.setText(String.format("Time: %d:%02d", minutes, seconds));
         
-        // Cambiar color del tiempo si queda poco
-        if (timeRemaining < 30000) { // Menos de 30 segundos
+        if (timeRemaining < 30000) {
             lblTime.setForeground(Color.RED);
         } else {
             lblTime.setForeground(Color.WHITE);
         }
     }
     
-    /**
-     * Verifica si el juego ha terminado (ganado o perdido)
-     */
     private void checkGameStatus() {
         if (game.isGameWon()) {
             stopTimers();
@@ -264,22 +227,19 @@ public class GameWindow extends JFrame {
         }
     }
     
-    /**
-     * Muestra el diálogo de victoria y las opciones disponibles
-     */
     private void showVictoryDialog() {
         int option = JOptionPane.showOptionDialog(this,
-            "¡Congratulations! ¡Has completado el nivel " + levelNumber + "!\n" +
-            "Frutas recolectadas: " + game.getPlayer().getFruitsCollected() + "/" + game.getTotalFruits() + "\n" +
-            "¿Qué deseas hacer?",
-            "¡Victoria!",
+            "¡Congratulations! ¡You have completed level " + levelNumber + "!\n" +
+            "Score obtained " + game.getPlayer().getScore() + "\n" +
+            "¿What's next?",
+            "¡Victory!",
             JOptionPane.YES_NO_CANCEL_OPTION,
             JOptionPane.INFORMATION_MESSAGE,
             null,
-            new String[]{"Next level", "Reintentar", "Menú Principal"},
-            "Siguiente Nivel");
+            new String[]{"Next level", "Restart", "Main Menu"},
+            "Next level");
         
-        if (option == 0) { // Siguiente nivel
+        if (option == 0) {
             if (levelNumber < 3) {
                 try {
                     Game newGame = new Game(levelNumber + 1, game.getPlayer().getFlavor());
@@ -293,42 +253,37 @@ public class GameWindow extends JFrame {
                         JOptionPane.ERROR_MESSAGE);
                 }
             } else {
-                // Completó todos los niveles
                 JOptionPane.showMessageDialog(this, 
-                    "¡Has completado todos los niveles!\n" +
-                    "¡Eres un maestro del hielo!\n" +
-                    "Gracias por jugar Bad DOPO-Cream.",
-                    "¡Juego Completado!",
+                    "¡You've completed all the levels!\n" +
+                    "Final score: " + game.getPlayer().getScore(),
+                    "¡Game completed!",
                     JOptionPane.INFORMATION_MESSAGE);
                 MainMenu menu = new MainMenu();
                 menu.setVisible(true);
                 dispose();
             }
-        } else if (option == 1) { // Reintentar
+        } else if (option == 1) {
             restartLevel();
-        } else { // Menú principal o cerró el diálogo
+        } else {
             MainMenu menu = new MainMenu();
             menu.setVisible(true);
             dispose();
         }
     }
     
-    /**
-     * Muestra el diálogo de derrota
-     */
     private void showDefeatDialog() {
         String reason;
         if (game.getTimeRemaining() == 0) {
-            reason = "Se acabó el tiempo.";
+            reason = "Time's over";
         } else {
-            reason = "Fuiste atrapado por un enemigo.";
+            reason = "You've been caught by an enemy.";
         }
         
         int option = JOptionPane.showConfirmDialog(this,
-            "¡Oh no! Has sido derrotado.\n" + reason + "\n" +
-            "Frutas recolectadas: " + game.getPlayer().getFruitsCollected() + "/" + game.getTotalFruits() + "\n" +
-            "¿Deseas intentarlo de nuevo?",
-            "Derrota",
+            "You've been defeated\n" + reason + "\n" +
+            "Score obtained " + game.getPlayer().getScore() + "\n" +
+            "¿Another try?",
+            "Loss",
             JOptionPane.YES_NO_OPTION);
         
         if (option == JOptionPane.YES_OPTION) {
@@ -340,13 +295,10 @@ public class GameWindow extends JFrame {
         }
     }
     
-    /**
-     * Reinicia el nivel actual
-     */
     private void restartLevel() {
         stopTimers();
         game.restart();
-        btnPause.setText("Pausar (P)");
+        btnPause.setText("Pause (P)");
         btnPause.setBackground(new Color(255, 165, 0));
         lblTime.setForeground(Color.WHITE);
         startGameTimers();
@@ -354,9 +306,6 @@ public class GameWindow extends JFrame {
         levelPanel.requestFocusInWindow();
     }
     
-    /**
-     * Detiene todos los timers del juego
-     */
     private void stopTimers() {
         if (gameTimer != null && gameTimer.isRunning()) {
             gameTimer.stop();
@@ -366,9 +315,6 @@ public class GameWindow extends JFrame {
         }
     }
     
-    /**
-     * Obtiene el panel principal del juego para acceso externo si es necesario
-     */
     public JPanel getMainPanel() {
         return (JPanel) getContentPane();
     }

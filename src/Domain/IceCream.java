@@ -9,13 +9,15 @@ public class IceCream {
     private String direction; // "UP", "DOWN", "LEFT", "RIGHT"
     private int fruitsCollected;
     private boolean alive;
+    private int score;
     
     public IceCream(int x, int y, String flavor) {
-        this.position = new Position(x, y);
+        position = new Position(x, y);
         this.flavor = flavor;
-        this.direction = "DOWN";
-        this.fruitsCollected = 0;
-        this.alive = true;
+        direction = "DOWN";
+        fruitsCollected = 0;
+        alive = true;
+        score = 0;
     }
     
     public Position getPosition() {
@@ -47,8 +49,9 @@ public class IceCream {
         position.setY(newY);
     }
     
-    public void collectFruit() {
+    public void collectFruit(int points) {
         fruitsCollected++;
+        score += points;
     }
     
     public void die() {
@@ -61,5 +64,10 @@ public class IceCream {
         fruitsCollected = 0;
         alive = true;
         direction = "DOWN";
+        score = 0;
+    }
+    
+    public int getScore() {
+        return score;
     }
 }
