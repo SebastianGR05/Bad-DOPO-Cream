@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 /**
  * Clase principal que maneja toda la lógica del juego para los tres niveles
+ * Ahora con soporte completo para obstáculos (fogatas y baldosas calientes)
  */
 public class Game {
     private Board board;
@@ -11,6 +12,7 @@ public class Game {
     private ArrayList<Enemy> enemies;
     private ArrayList<Fruit> fruits;
     private int totalFruits;
+    private int totalScore;
     private boolean gameWon;
     private boolean gameLost;
     private long startTime;
@@ -18,17 +20,14 @@ public class Game {
     private boolean paused;
     private int currentLevel;
     private String playerFlavor;
-    private long pausedTime;      // Tiempo total pausado
-    private long lastPauseStart;  // Momento en que se pausó
-    private int maxScore;
+    private long pausedTime;
+    private long lastPauseStart;
     
     public Game(int level, String flavor) throws BadDopoCreamException {
-        // Validar nivel
         if (level < 1 || level > 3) {
             throw new BadDopoCreamException(BadDopoCreamException.INVALID_LEVEL + ": " + level);
         }
         
-        // Validar sabor
         if (flavor == null || (!flavor.equals("VANILLA") && !flavor.equals("STRAWBERRY") && !flavor.equals("CHOCOLATE"))) {
             throw new BadDopoCreamException(BadDopoCreamException.INVALID_FLAVOR + ": " + flavor);
         }
@@ -42,53 +41,58 @@ public class Game {
         this.paused = false;
     }
     
-    /**
-     * Inicializa el nivel usando la matriz correspondiente
-     * @throws BadDopoCreamException si hay error al inicializar
-     */
     private void initializeLevel(int level) throws BadDopoCreamException {
         enemies = new ArrayList<>();
         fruits = new ArrayList<>();
-        maxScore = 0;
+        totalScore = 0;
         
-        // Obtener la matriz del nivel
         int[][] levelMatrix = getLevelMatrix(level);
         
-        // Paso 1: Buscar y crear al jugador primero
+        // Crear jugador primero
         for (int y = 0; y < 16; y++) {
             for (int x = 0; x < 16; x++) {
                 int value = levelMatrix[y][x];
-                if (value == 3) { // Jugador
+                if (value == 3) {
                     player = new IceCream(x, y, playerFlavor);
                     break;
                 }
             }
             if (player != null) { 
-            	break;
+                break;
             }
         }
         
-        // Paso 2: Crear enemigos y frutas (ahora el jugador ya existe)
+        // Crear enemigos y frutas
         for (int y = 0; y < 16; y++) {
             for (int x = 0; x < 16; x++) {
                 int value = levelMatrix[y][x];
+                Fruit newFruit = null;
+                
                 switch(value) {
-                    case 3: // Jugador ya creado, saltar
+                    case 3: // Jugador ya creado
                         break;
                     case 4: // Enemigo
                         createEnemy(x, y, level);
                         break;
                     case 5: // Banana
-                        fruits.add(new Banana(x, y));
+                        newFruit = new Banana(x, y);
+                        fruits.add(newFruit);
+                        totalScore += newFruit.getPoints();
                         break;
                     case 6: // Uvas
-                        fruits.add(new Grape(x, y));
+                        newFruit = new Grape(x, y);
+                        fruits.add(newFruit);
+                        totalScore += newFruit.getPoints();
                         break;
                     case 7: // Piña
-                        fruits.add(new Pineapple(x, y));
+                        newFruit = new Pineapple(x, y);
+                        fruits.add(newFruit);
+                        totalScore += newFruit.getPoints();
                         break;
                     case 8: // Cereza
-                        fruits.add(new Cherry(x, y));
+                        newFruit = new Cherry(x, y);
+                        fruits.add(newFruit);
+                        totalScore += newFruit.getPoints();
                         break;
                 }
             }
@@ -98,14 +102,10 @@ public class Game {
         gameWon = false;
         gameLost = false;
         startTime = System.currentTimeMillis();
-        pausedTime = 0;  // INICIALIZAR tiempo pausado
+        pausedTime = 0;
     }
     
-    /**
-     * Crea el enemigo correspondiente al nivel
-     * @throws BadDopoCreamException si hay error al crear enemigo
-     */
-    private void createEnemy(int x, int y, int level) throws BadDopoCreamException {
+    private void createEnemy(int x, int y, int level) {
         switch(level) {
             case 1:
                 enemies.add(new Troll(x, y));
@@ -124,15 +124,11 @@ public class Game {
         }
     }
     
-    /**
-     * Obtiene la matriz del nivel
-     * @throws BadDopoCreamException si el nivel es inválido
-     */
     private int[][] getLevelMatrix(int level) throws BadDopoCreamException {
         switch(level) {
             case 1:
                 return new int[][] {
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
                     {1,6,0,0,0,0,0,0,0,0,0,0,4,0,6,1},
                     {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
                     {1,0,5,0,0,0,0,0,0,0,0,0,0,5,0,1},
@@ -151,18 +147,18 @@ public class Game {
                 };
             case 2:
                 return new int[][] {
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
                     {1,0,0,7,0,0,0,0,0,0,0,0,7,0,0,1},
                     {1,0,2,0,2,0,2,0,0,2,0,2,0,2,0,1},
                     {1,7,0,0,0,0,0,0,0,0,0,0,0,0,7,1},
-                    {1,0,2,0,0,0,5,2,2,5,0,0,0,2,0,1},
+                    {1,0,2,0,9,0,5,2,2,5,0,9,0,2,0,1},
                     {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
                     {1,0,2,0,2,0,1,1,1,1,0,2,0,2,0,1},
                     {1,0,2,0,5,0,1,1,1,1,0,5,0,2,0,1},
                     {1,0,2,0,5,0,1,1,1,1,0,5,0,2,0,1},
                     {1,0,2,0,2,0,1,1,1,1,0,2,0,2,0,1},
                     {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-                    {1,0,2,0,0,0,5,2,2,5,0,0,0,2,0,1},
+                    {1,0,2,0,9,0,5,2,2,5,0,9,0,2,0,1},
                     {1,7,0,3,0,0,0,0,0,0,0,0,4,0,7,1},
                     {1,0,2,0,2,0,2,0,0,2,0,2,0,2,0,1},
                     {1,0,0,7,0,0,0,0,0,0,0,0,7,0,0,1},
@@ -170,18 +166,18 @@ public class Game {
                 };
             case 3:
                 return new int[][] {
-                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
                     {1,8,0,0,7,0,0,0,0,0,0,7,0,0,8,1},
                     {1,0,2,2,0,2,2,2,2,2,2,0,2,2,0,1},
                     {1,0,2,2,0,2,2,2,2,2,2,0,2,2,0,1},
-                    {1,7,0,0,0,0,0,0,0,0,0,0,0,0,7,1},
+                    {1,7,0,0,10,0,0,0,0,0,0,10,0,0,7,1},
                     {1,0,2,2,0,8,0,4,0,0,8,0,2,2,0,1},
                     {1,0,2,2,0,0,1,1,1,1,0,0,2,2,0,1},
                     {1,0,2,2,0,0,1,1,1,1,0,0,2,2,0,1},
                     {1,0,2,2,0,0,1,1,1,1,0,0,2,2,0,1},
                     {1,0,2,2,0,0,1,1,1,1,0,0,2,2,0,1},
                     {1,0,2,2,0,8,0,0,3,0,8,0,2,2,0,1},
-                    {1,7,0,0,0,0,0,0,0,0,0,0,0,0,7,1},
+                    {1,7,0,0,10,0,0,0,0,0,0,10,0,0,7,1},
                     {1,0,2,2,0,2,2,2,2,2,2,0,2,2,0,1},
                     {1,0,2,2,0,2,2,2,2,2,2,0,2,2,0,1},
                     {1,8,0,0,7,0,0,0,0,0,0,7,0,0,8,1},
@@ -192,10 +188,6 @@ public class Game {
         }
     }
     
-    /**
-     * Mueve al jugador en una dirección
-     * @throws BadDopoCreamException si el juego ya terminó
-     */
     public void movePlayer(String direction) {
         if (paused || gameLost || gameWon) {
             return;
@@ -221,12 +213,10 @@ public class Game {
             player.move(newX, newY);
             checkFruitCollection();
             checkEnemyCollision();
+            checkObstacleCollision();
         }
     }
     
-    /**
-     * Maneja la creación o destrucción de bloques de hielo
-     */
     public void handleIceBlock() {
         if (paused || gameLost || gameWon) {
             return;
@@ -254,7 +244,6 @@ public class Game {
                 board.createIceBlock(targetX, targetY);
             }
         } catch (BadDopoCreamException e) {
-            // Silenciosamente ignorar errores de bloques de hielo en el juego
             System.err.println("Error con bloque de hielo: " + e.getMessage());
         }
     }
@@ -292,6 +281,19 @@ public class Game {
         }
     }
     
+    /**
+     * Verifica si el jugador toca un obstáculo mortal
+     */
+    private void checkObstacleCollision() {
+        int x = player.getPosition().getX();
+        int y = player.getPosition().getY();
+        
+        if (board.hasLitCampfire(x, y)) {
+            player.die();
+            gameLost = true;
+        }
+    }
+    
     public void update() {
         if (paused || gameLost || gameWon) {
             return;
@@ -316,17 +318,17 @@ public class Game {
         }
         
         checkEnemyCollision();
+        checkObstacleCollision();
+        board.updateObstacles();
         board.cleanDestroyedBlocks();
     }
     
     public void togglePause() {
         if (paused) {
-            // Reanudar: calcular cuánto tiempo estuvo pausado
             long pauseDuration = System.currentTimeMillis() - lastPauseStart;
             pausedTime += pauseDuration;
             paused = false;
         } else {
-            // Pausar: guardar el momento actual
             lastPauseStart = System.currentTimeMillis();
             paused = true;
         }
@@ -362,7 +364,6 @@ public class Game {
     
     public long getTimeRemaining() {
         long elapsed = System.currentTimeMillis() - startTime - pausedTime;
-        // Si está pausado actualmente, no contar el tiempo desde que se pausó
         if (paused) {
             long currentPauseDuration = System.currentTimeMillis() - lastPauseStart;
             elapsed -= currentPauseDuration;
@@ -375,8 +376,8 @@ public class Game {
         return totalFruits;
     }
     
-    public int getMaxScore() {
-        return maxScore;
+    public int getTotalScore() {
+        return totalScore;
     }
     
     public int getCurrentLevel() {
@@ -385,15 +386,10 @@ public class Game {
     
     public void restart() {
         try {
-        	//Eliminamos jugador, frutas y enemigos
-        	enemies.clear();
-        	fruits.clear();
-        	player = null;
-        	//Reseteamos la puntuacion
-        	maxScore = 0;
-            // Recreamos el tablero
+            enemies.clear();
+            fruits.clear();
+            player = null;
             board = new Board(16, 16, currentLevel);
-            // Reinicio de nivel
             initializeLevel(currentLevel);
         } catch (BadDopoCreamException e) {
             System.err.println("Error al reiniciar: " + e.getMessage());

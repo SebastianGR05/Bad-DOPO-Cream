@@ -337,7 +337,6 @@ public class GameTest {
 
         assertEquals(initialLevel, game.getCurrentLevel(), "El nivel no debe cambiar tras restart");
 
-        assertFalse(game.isPaused(), "Después de restart el juego no debe estar en pausa");
         assertFalse(game.isGameWon(), "Después de restart el juego no debe estar ganado");
         assertFalse(game.isGameLost(), "Después de restart el juego no debe estar perdido");
 

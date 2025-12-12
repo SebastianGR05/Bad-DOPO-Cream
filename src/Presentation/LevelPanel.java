@@ -36,27 +36,35 @@ public abstract class LevelPanel extends JPanel {
      */
     private void loadCommonImages() throws BadDopoCreamException {
         try {
+            // Imágenes del tablero
             images.put("floor", loadImage("/images/levels/floor.png"));
             images.put("wall", loadImage("/images/blocks/wall.png"));
-            images.put("iceBlock", loadImage("/images/blocks/iceBlock.png"));
-            images.put("icebroken", loadImage("/images/blocks/iceBlockBroken.png"));
+            images.put("background", loadImage("/images/levels/background.png"));
             
+            // Bloques
+            images.put("iceBlock", loadImage("/images/blocks/iceBlock.png"));
+            
+            // Obstáculos
+            images.put("hotTile", loadImage("/images/blocks/hotTile.png"));
+            images.put("campfireOn", loadImage("/images/blocks/campfireOn.png"));
+            images.put("campfireOff", loadImage("/images/blocks/campfireOff.png"));
+            
+            // Helados
             images.put("vanilla", loadImage("/images/characters/vanillaAnimated.gif"));
             images.put("strawberry", loadImage("/images/characters/strawberryAnimated.png"));
             images.put("chocolate", loadImage("/images/characters/chocolateAnimated.png"));
             
+            // Frutas
             images.put("grape", loadImage("/images/fruits/grapes.png"));
             images.put("banana", loadImage("/images/fruits/banana.png"));
             images.put("pineapple", loadImage("/images/fruits/pineapple.png"));
             images.put("cherry", loadImage("/images/fruits/cherry.png"));
             
+            // Enemigos
             images.put("troll", loadImage("/images/enemies/troll.gif"));
             images.put("pot", loadImage("/images/enemies/pot.png"));
             images.put("squid", loadImage("/images/enemies/orangeSquid.png"));
             
-            images.put("background", loadImage("/images/levels/background.png"));
-            
-            System.out.println("Imágenes comunes cargadas correctamente");
         } catch (BadDopoCreamException e) {
             System.err.println("Error cargando imágenes comunes: " + e.getMessage());
             useImages = false;
@@ -86,12 +94,11 @@ public abstract class LevelPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         
-        // Dibujar el fondo primero, una sola vez para toda la pantalla
+        // Dibujar en orden de capas (de atrás hacia adelante)
         drawBackground(g);
-        
-        // Luego dibujar todos los elementos del juego encima
         drawBoard(g);
         drawIceBlocks(g);
+        drawObstacles(g);
         drawFruits(g);
         drawPlayer(g);
         drawEnemies(g);
@@ -102,15 +109,41 @@ public abstract class LevelPanel extends JPanel {
     }
     
     /**
-     * CORRECCIÓN: Dibuja el fondo una sola vez para toda la pantalla
+     * Dibuja el fondo una sola vez para toda la pantalla
      */
     protected void drawBackground(Graphics g) {
-        // Dibujar la imagen de fondo escalada a toda la pantalla
         g.drawImage(images.get("background"), 0, 0, getWidth(), getHeight(), this);
     }
     
     /**
-     * Dibuja todo el tablero (piso y paredes)
+     * Dibuja los obstáculos
+     */
+    protected void drawObstacles(Graphics g) {
+        Board board = game.getBoard();
+        
+        // Dibujar baldosas calientes
+        for (HotTile tile : board.getHotTiles()) {
+            if (tile.exists()) {
+                int x = tile.getPosition().getX() * CELL_SIZE;
+                int y = tile.getPosition().getY() * CELL_SIZE;
+                g.drawImage(images.get("hotTile"), x, y, CELL_SIZE, CELL_SIZE, this);
+            }
+        }
+        
+        // Dibujar fogatas
+        for (Campfire fire : board.getCampfires()) {
+            if (fire.exists()) {
+                int x = fire.getPosition().getX() * CELL_SIZE;
+                int y = fire.getPosition().getY() * CELL_SIZE;
+                // Elegir imagen según si está encendida o apagada
+                String imageKey = fire.isOn() ? "campfireOn" : "campfireOff";
+                g.drawImage(images.get(imageKey), x, y, CELL_SIZE, CELL_SIZE, this);
+            }
+        }
+    }
+    
+    /**
+     * Dibuja todo el tablero
      */
     protected void drawBoard(Graphics g) {
         Board board = game.getBoard();
@@ -133,7 +166,7 @@ public abstract class LevelPanel extends JPanel {
     }
     
     /**
-     * Dibuja el piso (celdas vacías del tablero)
+     * Dibuja el piso
      */
     protected void drawFloor(Graphics g, int x, int y) {
         g.drawImage(images.get("floor"), x, y, CELL_SIZE, CELL_SIZE, this);
@@ -191,16 +224,15 @@ public abstract class LevelPanel extends JPanel {
         
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 48));
-        String msg = "PAUSA";
+        String msg = "PAUSE";
         FontMetrics fm = g.getFontMetrics();
         int msgWidth = fm.stringWidth(msg);
         g.drawString(msg, (getWidth() - msgWidth) / 2, getHeight() / 2);
         
         g.setFont(new Font("Arial", Font.PLAIN, 18));
-        String instruction = "Presiona P o ESC para continuar";
+        String instruction = "Press P or ESC to continue";
         fm = g.getFontMetrics();
         int instrWidth = fm.stringWidth(instruction);
         g.drawString(instruction, (getWidth() - instrWidth) / 2, getHeight() / 2 + 50);
     }
-    
 }

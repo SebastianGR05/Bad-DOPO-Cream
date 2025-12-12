@@ -79,7 +79,7 @@ public class GameWindow extends JFrame {
         lblLevel.setFont(new Font("Arial", Font.BOLD, 20));
         
         // Cambio: Mostrar puntaje en lugar de frutas
-        lblScore = new JLabel("Score: " + game.getMaxScore(), SwingConstants.CENTER);
+        lblScore = new JLabel("Score: " + game.getTotalScore(), SwingConstants.CENTER);
         lblScore.setForeground(Color.YELLOW);
         lblScore.setFont(new Font("Arial", Font.BOLD, 20));
         
@@ -203,7 +203,6 @@ public class GameWindow extends JFrame {
     private void updateLabels() {
         // Actualizar puntaje
         lblScore.setText("Score: " + game.getPlayer().getScore());
-        
         // Actualizar tiempo
         long timeRemaining = game.getTimeRemaining();
         int minutes = (int) (timeRemaining / 60000);
@@ -272,15 +271,9 @@ public class GameWindow extends JFrame {
     }
     
     private void showDefeatDialog() {
-        String reason;
-        if (game.getTimeRemaining() == 0) {
-            reason = "Time's over";
-        } else {
-            reason = "You've been caught by an enemy.";
-        }
         
         int option = JOptionPane.showConfirmDialog(this,
-            "You've been defeated\n" + reason + "\n" +
+            "You've been defeated\n" +
             "Score obtained " + game.getPlayer().getScore() + "\n" +
             "¿Another try?",
             "Loss",

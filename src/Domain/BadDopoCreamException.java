@@ -34,11 +34,6 @@ public class BadDopoCreamException extends Exception {
     public static final String GAME_NOT_STARTED = "El juego no ha iniciado";
     public static final String TIME_LIMIT_EXCEEDED = "Se acabó el tiempo límite";
     
-    // Errores de guardado y carga
-    public static final String SAVE_ERROR = "Error al guardar la partida";
-    public static final String LOAD_ERROR = "Error al cargar la partida";
-    public static final String FILE_NOT_FOUND = "Archivo de guardado no encontrado";
-    
     // Errores de imágenes y recursos
     public static final String IMAGE_LOAD_ERROR = "Error al cargar imagen";
     public static final String RESOURCE_NOT_FOUND = "Recurso no encontrado";

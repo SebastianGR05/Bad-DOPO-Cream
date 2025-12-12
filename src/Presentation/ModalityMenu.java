@@ -134,8 +134,8 @@ public class ModalityMenu extends JFrame {
         btnPvP.addActionListener(e -> {
             // PvP no está implementado
             JOptionPane.showMessageDialog(this,
-                "La modalidad Player vs Player no está disponible.\n",
-                "Aviso",
+                "The mode Player vs Player it's not available.\n",
+                "Warning",
                 JOptionPane.INFORMATION_MESSAGE);
         });
         
@@ -149,8 +149,8 @@ public class ModalityMenu extends JFrame {
         btnMvM.addActionListener(e -> {
             // MvM no está implementado
             JOptionPane.showMessageDialog(this,
-                "La modalidad Machine vs Machine está disponible.\n",
-                "Aviso",
+                "The mode Machine vs Machine it's not available.\n",
+                "Warning",
                 JOptionPane.INFORMATION_MESSAGE);
         });
         

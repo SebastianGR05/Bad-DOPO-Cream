@@ -105,4 +105,14 @@ public class MainMenu extends JFrame {
         });
     }
     
+    /**
+     * Método principal para iniciar el juego
+     */
+    public static void main(String[] args) {
+            MainMenu menu = new MainMenu();
+            menu.setVisible(true);
+    }
+    
+    
+    
 }

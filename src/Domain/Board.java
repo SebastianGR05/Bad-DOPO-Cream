@@ -3,30 +3,28 @@ package Domain;
 import java.util.ArrayList;
 
 /**
- * Representa el tablero del juego con soporte para diferentes niveles
- * Usa las matrices predefinidas de los niveles
+ * Representa el tablero del juego
  */
 public class Board {
     private int width;
     private int height;
     private int[][] grid;
     private ArrayList<IceBlock> iceBlocks;
+    private ArrayList<Campfire> campfires;
+    private ArrayList<HotTile> hotTiles;
     private int currentLevel;
     
     public Board(int width, int height) throws BadDopoCreamException {
-        // Usar tamaño fijo de 16x16 para todos los niveles
         this.width = 16;
         this.height = 16;
         this.grid = new int[this.height][this.width];
         this.iceBlocks = new ArrayList<>();
+        this.campfires = new ArrayList<>();
+        this.hotTiles = new ArrayList<>();
         this.currentLevel = 1;
         createLevel1();
     }
     
-    /**
-     * Constructor alternativo que permite especificar el nivel
-     * @throws BadDopoCreamException si el nivel es inválido
-     */
     public Board(int width, int height, int level) throws BadDopoCreamException {
         if (level < 1 || level > 3) {
             throw new BadDopoCreamException(BadDopoCreamException.INVALID_LEVEL + ": " + level);
@@ -36,6 +34,8 @@ public class Board {
         this.height = 16;
         this.grid = new int[this.height][this.width];
         this.iceBlocks = new ArrayList<>();
+        this.campfires = new ArrayList<>();
+        this.hotTiles = new ArrayList<>();
         this.currentLevel = level;
         
         try {
@@ -57,9 +57,6 @@ public class Board {
         }
     }
     
-    /**
-     * Crea el diseño del nivel 1 según la matriz predefinida
-     */
     private void createLevel1() {
         int[][] level1Matrix = {
             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -83,23 +80,20 @@ public class Board {
         loadMatrixToGrid(level1Matrix);
     }
     
-    /**
-     * Crea el diseño del nivel 2 según la matriz predefinida
-     */
     private void createLevel2() {
         int[][] level2Matrix = {
             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
             {1,0,0,7,0,0,0,0,0,0,0,0,7,0,0,1},
             {1,0,2,0,2,0,2,0,0,2,0,2,0,2,0,1},
-            {1,7,0,0,0,0,0,0,0,0,0,0,4,0,7,1},
-            {1,0,2,0,0,0,5,2,2,5,0,0,0,2,0,1},
+            {1,7,0,0,0,0,0,0,0,0,0,0,0,0,7,1},
+            {1,0,2,0,9,0,5,2,2,5,0,9,0,2,0,1},
             {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
             {1,0,2,0,2,0,1,1,1,1,0,2,0,2,0,1},
             {1,0,2,0,5,0,1,1,1,1,0,5,0,2,0,1},
             {1,0,2,0,5,0,1,1,1,1,0,5,0,2,0,1},
             {1,0,2,0,2,0,1,1,1,1,0,2,0,2,0,1},
             {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
-            {1,0,2,0,0,0,5,2,2,5,0,0,0,2,0,1},
+            {1,0,2,0,9,0,5,2,2,5,0,9,0,2,0,1},
             {1,7,0,3,0,0,0,0,0,0,0,0,4,0,7,1},
             {1,0,2,0,2,0,2,0,0,2,0,2,0,2,0,1},
             {1,0,0,7,0,0,0,0,0,0,0,0,7,0,0,1},
@@ -109,23 +103,20 @@ public class Board {
         loadMatrixToGrid(level2Matrix);
     }
     
-    /**
-     * Crea el diseño del nivel 3 según la matriz predefinida
-     */
     private void createLevel3() {
         int[][] level3Matrix = {
             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
             {1,8,0,0,7,0,0,0,0,0,0,7,0,0,8,1},
             {1,0,2,2,0,2,2,2,2,2,2,0,2,2,0,1},
             {1,0,2,2,0,2,2,2,2,2,2,0,2,2,0,1},
-            {1,7,0,0,0,0,0,0,0,0,0,0,0,0,7,1},
+            {1,7,0,0,10,0,0,0,0,0,0,10,0,0,7,1},
             {1,0,2,2,0,8,0,4,0,0,8,0,2,2,0,1},
             {1,0,2,2,0,0,1,1,1,1,0,0,2,2,0,1},
             {1,0,2,2,0,0,1,1,1,1,0,0,2,2,0,1},
             {1,0,2,2,0,0,1,1,1,1,0,0,2,2,0,1},
             {1,0,2,2,0,0,1,1,1,1,0,0,2,2,0,1},
             {1,0,2,2,0,8,0,0,3,0,8,0,2,2,0,1},
-            {1,7,0,0,0,0,0,0,0,0,0,0,0,0,7,1},
+            {1,7,0,0,10,0,0,0,0,0,0,10,0,0,7,1},
             {1,0,2,2,0,2,2,2,2,2,2,0,2,2,0,1},
             {1,0,2,2,0,2,2,2,2,2,2,0,2,2,0,1},
             {1,8,0,0,7,0,0,0,0,0,0,7,0,0,8,1},
@@ -136,21 +127,27 @@ public class Board {
     }
     
     /**
-     * Carga una matriz en el grid del tablero y crea bloques de hielo iniciales
+     * Carga una matriz en el grid y crea obstáculos según los códigos
      */
     private void loadMatrixToGrid(int[][] matrix) {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
                 int value = matrix[i][j];
                 
-                // 0=empty, 1=wall, 2=ice block, 3=player, 4=enemy, 5-8=fruits
                 if (value == 1) {
                     grid[i][j] = 1; // Pared
                 } else if (value == 2) {
-                    grid[i][j] = 0; // El espacio es vacío
-                    // Crear bloque de hielo en esta posición
+                    grid[i][j] = 0; // Bloque de hielo
                     IceBlock block = new IceBlock(j, i);
                     iceBlocks.add(block);
+                } else if (value == 9) {
+                    grid[i][j] = 0; // Espacio vacío
+                    HotTile tile = new HotTile(j, i);
+                    hotTiles.add(tile);
+                } else if (value == 10) {
+                    grid[i][j] = 0; // Espacio vacío
+                    Campfire fire = new Campfire(j, i);
+                    campfires.add(fire);
                 } else {
                     grid[i][j] = 0; // Vacío
                 }
@@ -172,7 +169,7 @@ public class Board {
     
     public int getCellType(int x, int y) {
         if (!isValidPosition(x, y)) {
-            return 1; // Fuera del tablero = pared
+            return 1;
         }
         return grid[y][x];
     }
@@ -196,9 +193,33 @@ public class Board {
     }
     
     /**
-     * Crea un bloque de hielo en la posición especificada
-     * @throws BadDopoCreamException si la posición es inválida o ya hay un bloque
+     * Verifica si hay una fogata encendida en la posición
      */
+    public boolean hasLitCampfire(int x, int y) {
+        for (Campfire fire : campfires) {
+            if (fire.exists() && fire.isOn() &&
+                fire.getPosition().getX() == x && 
+                fire.getPosition().getY() == y) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Verifica si hay una baldosa caliente en la posición
+     */
+    public boolean hasHotTile(int x, int y) {
+        for (HotTile tile : hotTiles) {
+            if (tile.exists() &&
+                tile.getPosition().getX() == x && 
+                tile.getPosition().getY() == y) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public void createIceBlock(int x, int y) throws BadDopoCreamException {
         if (!isValidPosition(x, y)) {
             throw new BadDopoCreamException(BadDopoCreamException.INVALID_POSITION + ": (" + x + "," + y + ")");
@@ -214,12 +235,23 @@ public class Board {
         
         IceBlock newBlock = new IceBlock(x, y);
         iceBlocks.add(newBlock);
+        
+        // Si hay una baldosa caliente, derretir el bloque inmediatamente
+        if (hasHotTile(x, y)) {
+            newBlock.destroy();
+        }
+        
+        // Si hay una fogata, apagarla
+        for (Campfire fire : campfires) {
+            if (fire.exists() && fire.isOn() &&
+                fire.getPosition().getX() == x && 
+                fire.getPosition().getY() == y) {
+                fire.extinguish();
+                break;
+            }
+        }
     }
     
-    /**
-     * Destruye bloques de hielo en efecto dominó en una dirección
-     * @throws BadDopoCreamException si la dirección o posición son inválidas
-     */
     public void destroyIceBlocks(int startX, int startY, String direction) throws BadDopoCreamException {
         if (!isValidPosition(startX, startY)) {
             throw new BadDopoCreamException(BadDopoCreamException.INVALID_POSITION);
@@ -239,7 +271,6 @@ public class Board {
         int x = startX + dx;
         int y = startY + dy;
         
-        // Destruir bloques consecutivos en la dirección hasta encontrar vacío o pared
         while (isValidPosition(x, y) && !hasWall(x, y)) {
             boolean blockFound = false;
             
@@ -247,12 +278,22 @@ public class Board {
                 if (block.exists() && block.getPosition().getX() == x 
                     && block.getPosition().getY() == y) {
                     block.destroy();
+                    
+                    // Reencender fogata si había una debajo
+                    for (Campfire fire : campfires) {
+                        if (fire.exists() && !fire.isOn() &&
+                            fire.getPosition().getX() == x && 
+                            fire.getPosition().getY() == y) {
+                            fire.extinguish(); // Reinicia el temporizador
+                            break;
+                        }
+                    }
+                    
                     blockFound = true;
                     break;
                 }
             }
             
-            // Si no encontramos bloque, detener la destrucción
             if (!blockFound) {
                 break;
             }
@@ -263,8 +304,21 @@ public class Board {
     }
     
     /**
-     * Limpia los bloques destruidos de la lista
+     * Actualiza todos los obstáculos (fogatas se reencienden)
      */
+    public void updateObstacles() {
+        for (Campfire fire : campfires) {
+            if (fire.exists()) {
+                fire.update();
+            }
+        }
+        for (HotTile tile : hotTiles) {
+            if (tile.exists()) {
+                tile.meltIceBlockIfPresent(this);
+            }
+        }
+    }
+    
     public void cleanDestroyedBlocks() {
         iceBlocks.removeIf(block -> !block.exists());
     }
@@ -273,10 +327,37 @@ public class Board {
         return iceBlocks;
     }
     
-    /**
-     * Reinicia todos los bloques de hielo del tablero
-     */
+    public ArrayList<Campfire> getCampfires() {
+        return campfires;
+    }
+    
+    public ArrayList<HotTile> getHotTiles() {
+        return hotTiles;
+    }
+    
     public void clearAllIceBlocks() {
         iceBlocks.clear();
+    }
+    
+    /**
+     * Agrega una fogata al tablero
+     */
+    public void addCampfire(int x, int y) {
+        campfires.add(new Campfire(x, y));
+    }
+    
+    public void clearAllCampfires() {
+        campfires.clear();
+    }
+    
+    /**
+     * Agrega una baldosa caliente al tablero
+     */
+    public void addHotTile(int x, int y) {
+        hotTiles.add(new HotTile(x, y));
+    }
+    
+    public void clearAllHotTiles() {
+        hotTiles.clear();
     }
 }
