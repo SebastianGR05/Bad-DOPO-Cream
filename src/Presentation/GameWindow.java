@@ -78,7 +78,6 @@ public class GameWindow extends JFrame {
         lblLevel.setForeground(Color.WHITE);
         lblLevel.setFont(new Font("Arial", Font.BOLD, 20));
         
-        // Cambio: Mostrar puntaje en lugar de frutas
         lblScore = new JLabel("Score: " + game.getTotalScore(), SwingConstants.CENTER);
         lblScore.setForeground(Color.YELLOW);
         lblScore.setFont(new Font("Arial", Font.BOLD, 20));
