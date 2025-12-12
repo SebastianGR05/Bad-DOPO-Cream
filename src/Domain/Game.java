@@ -3,8 +3,7 @@ package Domain;
 import java.util.ArrayList;
 
 /**
- * Clase principal que maneja toda la lógica del juego para los tres niveles
- * Ahora con soporte completo para obstáculos (fogatas y baldosas calientes)
+ * Clase principal que maneja toda la lógica del juego
  */
 public class Game {
     private Board board;
@@ -23,15 +22,7 @@ public class Game {
     private long pausedTime;
     private long lastPauseStart;
     
-    public Game(int level, String flavor) throws BadDopoCreamException {
-        if (level < 1 || level > 3) {
-            throw new BadDopoCreamException(BadDopoCreamException.INVALID_LEVEL + ": " + level);
-        }
-        
-        if (flavor == null || (!flavor.equals("VANILLA") && !flavor.equals("STRAWBERRY") && !flavor.equals("CHOCOLATE"))) {
-            throw new BadDopoCreamException(BadDopoCreamException.INVALID_FLAVOR + ": " + flavor);
-        }
-        
+    public Game(int level, String flavor) {
         this.currentLevel = level;
         this.playerFlavor = flavor;
         this.pausedTime = 0;
@@ -41,7 +32,7 @@ public class Game {
         this.paused = false;
     }
     
-    private void initializeLevel(int level) throws BadDopoCreamException {
+    private void initializeLevel(int level) {
         enemies = new ArrayList<>();
         fruits = new ArrayList<>();
         totalScore = 0;
@@ -124,11 +115,11 @@ public class Game {
         }
     }
     
-    private int[][] getLevelMatrix(int level) throws BadDopoCreamException {
+    private int[][] getLevelMatrix(int level) {
         switch(level) {
             case 1:
                 return new int[][] {
-                	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
                     {1,6,0,0,0,0,0,0,0,0,0,0,4,0,6,1},
                     {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
                     {1,0,5,0,0,0,0,0,0,0,0,0,0,5,0,1},
@@ -147,7 +138,7 @@ public class Game {
                 };
             case 2:
                 return new int[][] {
-                	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
                     {1,0,0,7,0,0,0,0,0,0,0,0,7,0,0,1},
                     {1,0,2,0,2,0,2,0,0,2,0,2,0,2,0,1},
                     {1,7,0,0,0,0,0,0,0,0,0,0,0,0,7,1},
@@ -166,7 +157,7 @@ public class Game {
                 };
             case 3:
                 return new int[][] {
-                	{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                    {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
                     {1,8,0,0,7,0,0,0,0,0,0,7,0,0,8,1},
                     {1,0,2,2,0,2,2,2,2,2,2,0,2,2,0,1},
                     {1,0,2,2,0,2,2,2,2,2,2,0,2,2,0,1},
@@ -184,7 +175,7 @@ public class Game {
                     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
                 };
             default:
-                throw new BadDopoCreamException(BadDopoCreamException.INVALID_LEVEL + ": " + level);
+                return getLevelMatrix(1);
         }
     }
     
@@ -236,15 +227,11 @@ public class Game {
             case "RIGHT": targetX++; break;
         }
         
-        try {
-            if (board.hasIceBlock(targetX, targetY)) {
-                board.destroyIceBlocks(x, y, direction);
-            } else if (board.isValidPosition(targetX, targetY) && 
-                       !board.hasWall(targetX, targetY)) {
-                board.createIceBlock(targetX, targetY);
-            }
-        } catch (BadDopoCreamException e) {
-            System.err.println("Error con bloque de hielo: " + e.getMessage());
+        if (board.hasIceBlock(targetX, targetY)) {
+            board.destroyIceBlocks(x, y, direction);
+        } else if (board.isValidPosition(targetX, targetY) && 
+                   !board.hasWall(targetX, targetY)) {
+            board.createIceBlock(targetX, targetY);
         }
     }
     
@@ -281,9 +268,6 @@ public class Game {
         }
     }
     
-    /**
-     * Verifica si el jugador toca un obstáculo mortal
-     */
     private void checkObstacleCollision() {
         int x = player.getPosition().getX();
         int y = player.getPosition().getY();
@@ -385,14 +369,10 @@ public class Game {
     }
     
     public void restart() {
-        try {
-            enemies.clear();
-            fruits.clear();
-            player = null;
-            board = new Board(16, 16, currentLevel);
-            initializeLevel(currentLevel);
-        } catch (BadDopoCreamException e) {
-            System.err.println("Error al reiniciar: " + e.getMessage());
-        }
+        enemies.clear();
+        fruits.clear();
+        player = null;
+        board = new Board(16, 16, currentLevel);
+        initializeLevel(currentLevel);
     }
 }

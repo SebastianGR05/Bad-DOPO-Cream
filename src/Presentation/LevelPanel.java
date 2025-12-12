@@ -8,12 +8,12 @@ import java.util.HashMap;
 
 /**
  * Clase base abstracta para todos los paneles de nivel
+ * Solo usa excepciones para la carga de imágenes
  */
 public abstract class LevelPanel extends JPanel {
     protected Game game;
     protected final int CELL_SIZE = 30;
     protected HashMap<String, Image> images;
-    protected boolean useImages = true;
     
     public LevelPanel(Game game) {
         this.game = game;
@@ -22,71 +22,56 @@ public abstract class LevelPanel extends JPanel {
             game.getBoard().getWidth() * CELL_SIZE, 
             game.getBoard().getHeight() * CELL_SIZE
         ));
-        try {
-            loadCommonImages();
-        } catch (BadDopoCreamException e) {
-            System.err.println("Error fatal cargando imágenes: " + e.getMessage());
-            useImages = false;
-        }
+        loadAllImages();
     }
     
     /**
-     * Carga las imágenes comunes a todos los niveles
-     * @throws BadDopoCreamException si hay error al cargar imágenes
+     * Carga todas las imágenes necesarias
      */
-    private void loadCommonImages() throws BadDopoCreamException {
-        try {
-            // Imágenes del tablero
-            images.put("floor", loadImage("/images/levels/floor.png"));
-            images.put("wall", loadImage("/images/blocks/wall.png"));
-            images.put("background", loadImage("/images/levels/background.png"));
-            
-            // Bloques
-            images.put("iceBlock", loadImage("/images/blocks/iceBlock.png"));
-            
-            // Obstáculos
-            images.put("hotTile", loadImage("/images/blocks/hotTile.png"));
-            images.put("campfireOn", loadImage("/images/blocks/campfireOn.png"));
-            images.put("campfireOff", loadImage("/images/blocks/campfireOff.png"));
-            
-            // Helados
-            images.put("vanilla", loadImage("/images/characters/vanillaAnimated.gif"));
-            images.put("strawberry", loadImage("/images/characters/strawberryAnimated.png"));
-            images.put("chocolate", loadImage("/images/characters/chocolateAnimated.png"));
-            
-            // Frutas
-            images.put("grape", loadImage("/images/fruits/grapes.png"));
-            images.put("banana", loadImage("/images/fruits/banana.png"));
-            images.put("pineapple", loadImage("/images/fruits/pineapple.png"));
-            images.put("cherry", loadImage("/images/fruits/cherry.png"));
-            
-            // Enemigos
-            images.put("troll", loadImage("/images/enemies/troll.gif"));
-            images.put("pot", loadImage("/images/enemies/pot.png"));
-            images.put("squid", loadImage("/images/enemies/orangeSquid.png"));
-            
-        } catch (BadDopoCreamException e) {
-            System.err.println("Error cargando imágenes comunes: " + e.getMessage());
-            useImages = false;
-            throw e;
-        }
+    private void loadAllImages() {
+        // Imágenes del tablero
+        loadImage("floor", "/images/levels/floor.png");
+        loadImage("wall", "/images/blocks/wall.png");
+        loadImage("background", "/images/levels/background.png");
+        
+        // Bloques
+        loadImage("iceBlock", "/images/blocks/iceBlock.png");
+        
+        // Obstáculos
+        loadImage("hotTile", "/images/blocks/hotTile.png");
+        loadImage("campfireOn", "/images/blocks/campfireOn.png");
+        loadImage("campfireOff", "/images/blocks/campfireOff.png");
+        
+        // Helados
+        loadImage("vanilla", "/images/characters/vanillaAnimated.gif");
+        loadImage("strawberry", "/images/characters/strawberryAnimated.png");
+        loadImage("chocolate", "/images/characters/chocolateAnimated.png");
+        
+        // Frutas
+        loadImage("grape", "/images/fruits/grapes.png");
+        loadImage("banana", "/images/fruits/banana.png");
+        loadImage("pineapple", "/images/fruits/pineapple.png");
+        loadImage("cherry", "/images/fruits/cherry.png");
+        
+        // Enemigos
+        loadImage("troll", "/images/enemies/troll.gif");
+        loadImage("pot", "/images/enemies/pot.png");
+        loadImage("squid", "/images/enemies/orangeSquid.png");
     }
     
     /**
-     * Carga una imagen desde un path
-     * @param path Ruta de la imagen
-     * @return La imagen cargada
-     * @throws BadDopoCreamException si no se puede cargar la imagen
+     * Intenta cargar una imagen
      */
-    protected Image loadImage(String path) throws BadDopoCreamException {
+    private void loadImage(String key, String path) {
         try {
             Image img = ImageIO.read(getClass().getResourceAsStream(path));
-            if (img == null) {
-                throw new BadDopoCreamException(BadDopoCreamException.IMAGE_LOAD_ERROR + ": " + path);
+            if (img != null) {
+                images.put(key, img);
+            } else {
+                System.err.println("Warning: Could not load image: " + path);
             }
-            return img;
         } catch (Exception e) {
-            throw new BadDopoCreamException(BadDopoCreamException.RESOURCE_NOT_FOUND + ": " + path, e);
+            System.err.println("Warning: Error loading image " + path + ": " + e.getMessage());
         }
     }
     
@@ -94,7 +79,7 @@ public abstract class LevelPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         
-        // Dibujar en orden de capas (de atrás hacia adelante)
+        // Dibujar en orden de capas
         drawBackground(g);
         drawBoard(g);
         drawIceBlocks(g);
@@ -108,16 +93,13 @@ public abstract class LevelPanel extends JPanel {
         }
     }
     
-    /**
-     * Dibuja el fondo una sola vez para toda la pantalla
-     */
     protected void drawBackground(Graphics g) {
-        g.drawImage(images.get("background"), 0, 0, getWidth(), getHeight(), this);
+        Image bg = images.get("background");
+        if (bg != null) {
+            g.drawImage(bg, 0, 0, getWidth(), getHeight(), this);
+        }
     }
     
-    /**
-     * Dibuja los obstáculos
-     */
     protected void drawObstacles(Graphics g) {
         Board board = game.getBoard();
         
@@ -126,7 +108,10 @@ public abstract class LevelPanel extends JPanel {
             if (tile.exists()) {
                 int x = tile.getPosition().getX() * CELL_SIZE;
                 int y = tile.getPosition().getY() * CELL_SIZE;
-                g.drawImage(images.get("hotTile"), x, y, CELL_SIZE, CELL_SIZE, this);
+                Image img = images.get("hotTile");
+                if (img != null) {
+                    g.drawImage(img, x, y, CELL_SIZE, CELL_SIZE, this);
+                }
             }
         }
         
@@ -135,16 +120,15 @@ public abstract class LevelPanel extends JPanel {
             if (fire.exists()) {
                 int x = fire.getPosition().getX() * CELL_SIZE;
                 int y = fire.getPosition().getY() * CELL_SIZE;
-                // Elegir imagen según si está encendida o apagada
                 String imageKey = fire.isOn() ? "campfireOn" : "campfireOff";
-                g.drawImage(images.get(imageKey), x, y, CELL_SIZE, CELL_SIZE, this);
+                Image img = images.get(imageKey);
+                if (img != null) {
+                    g.drawImage(img, x, y, CELL_SIZE, CELL_SIZE, this);
+                }
             }
         }
     }
     
-    /**
-     * Dibuja todo el tablero
-     */
     protected void drawBoard(Graphics g) {
         Board board = game.getBoard();
         
@@ -155,34 +139,37 @@ public abstract class LevelPanel extends JPanel {
                 int screenY = y * CELL_SIZE;
                 
                 if (cellType == 1) {
-                    // Dibujar pared
                     drawWall(g, screenX, screenY);
                 } else {
-                    // Dibujar piso (celdas vacías)
                     drawFloor(g, screenX, screenY);
                 }
             }
         }
     }
     
-    /**
-     * Dibuja el piso
-     */
     protected void drawFloor(Graphics g, int x, int y) {
-        g.drawImage(images.get("floor"), x, y, CELL_SIZE, CELL_SIZE, this);
+        Image floor = images.get("floor");
+        if (floor != null) {
+            g.drawImage(floor, x, y, CELL_SIZE, CELL_SIZE, this);
+        }
     }
     
     protected void drawWall(Graphics g, int x, int y) {
-        g.drawImage(images.get("wall"), x, y, CELL_SIZE, CELL_SIZE, this);
+        Image wall = images.get("wall");
+        if (wall != null) {
+            g.drawImage(wall, x, y, CELL_SIZE, CELL_SIZE, this);
+        }
     }
     
     protected void drawIceBlocks(Graphics g) {
+        Image ice = images.get("iceBlock");
+        if (ice == null) return;
+        
         for (IceBlock block : game.getBoard().getIceBlocks()) {
             if (block.exists()) {
                 int x = block.getPosition().getX() * CELL_SIZE;
                 int y = block.getPosition().getY() * CELL_SIZE;
-                
-                g.drawImage(images.get("iceBlock"), x, y, CELL_SIZE, CELL_SIZE, this);
+                g.drawImage(ice, x, y, CELL_SIZE, CELL_SIZE, this);
             }
         }
     }
@@ -197,7 +184,10 @@ public abstract class LevelPanel extends JPanel {
             int y = fruit.getPosition().getY() * CELL_SIZE;
             String type = fruit.getType().toLowerCase();
             
-            g.drawImage(images.get(type), x + 5, y + 5, CELL_SIZE - 10, CELL_SIZE - 10, this);
+            Image fruitImg = images.get(type);
+            if (fruitImg != null) {
+                g.drawImage(fruitImg, x + 5, y + 5, CELL_SIZE - 10, CELL_SIZE - 10, this);
+            }
         }
     }
     
@@ -211,10 +201,12 @@ public abstract class LevelPanel extends JPanel {
         int y = player.getPosition().getY() * CELL_SIZE;
         
         String flavorKey = player.getFlavor().toLowerCase();
-
-        g.drawImage(images.get(flavorKey), x, y, CELL_SIZE, CELL_SIZE, this);
+        Image playerImg = images.get(flavorKey);
+        
+        if (playerImg != null) {
+            g.drawImage(playerImg, x, y, CELL_SIZE, CELL_SIZE, this);
+        }
     }
-    
     
     protected abstract void drawEnemies(Graphics g);
     

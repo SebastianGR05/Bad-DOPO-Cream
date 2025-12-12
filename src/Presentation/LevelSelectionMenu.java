@@ -8,7 +8,6 @@ import javax.imageio.ImageIO;
 
 /**
  * Menú de selección de nivel
- * Permite elegir entre los 3 niveles disponibles
  */
 public class LevelSelectionMenu extends JFrame {
     
@@ -23,21 +22,19 @@ public class LevelSelectionMenu extends JFrame {
     }
     
     private void prepareElements() {
-        setTitle("Selecciona el Nivel");
+        setTitle("Select Level");
         setSize(900, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
         
-        // Cargar imagen de fondo común
         try {
             backgroundImage = ImageIO.read(getClass().getResourceAsStream(
                 "/images/menu/menusBackground.png"));
         } catch (Exception e) {
-            System.out.println("No se pudo cargar menusBackground.png: " + e.getMessage());
+            System.out.println("Could not load menusBackground.png");
         }
         
-        // Panel principal
         JPanel mainPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -57,7 +54,6 @@ public class LevelSelectionMenu extends JFrame {
         };
         mainPanel.setLayout(null);
         
-        // Título
         JLabel title = new JLabel("Choose the level");
         title.setFont(new Font("Arial", Font.BOLD, 48));
         title.setForeground(Color.WHITE);
@@ -65,7 +61,6 @@ public class LevelSelectionMenu extends JFrame {
         title.setHorizontalAlignment(SwingConstants.CENTER);
         mainPanel.add(title);
         
-        // Paneles de niveles
         JPanel level1Panel = createLevelPanel(
             "Level 1", 
             "EASY",
@@ -90,7 +85,6 @@ public class LevelSelectionMenu extends JFrame {
         );
         mainPanel.add(level3Panel);
         
-        // Botón volver
         btnBack = createBackButton();
         mainPanel.add(btnBack);
         
@@ -105,7 +99,6 @@ public class LevelSelectionMenu extends JFrame {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                // Fondo del panel
                 if (hover) {
                     g.setColor(new Color(255, 255, 255, 250));
                 } else {
@@ -113,7 +106,6 @@ public class LevelSelectionMenu extends JFrame {
                 }
                 g.fillRoundRect(0, 0, getWidth(), getHeight(), 20, 20);
                 
-                // Borde
                 g.setColor(new Color(100, 180, 255));
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setStroke(new BasicStroke(3));
@@ -125,14 +117,12 @@ public class LevelSelectionMenu extends JFrame {
         panel.setOpaque(false);
         panel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
-        // Nombre del nivel
         JLabel nameLabel = new JLabel(levelName);
         nameLabel.setFont(new Font("Arial", Font.BOLD, 28));
         nameLabel.setForeground(new Color(50, 50, 150));
         nameLabel.setBounds(20, 10, 200, 35);
         panel.add(nameLabel);
         
-        // Dificultad
         JLabel diffLabel = new JLabel(difficulty);
         diffLabel.setFont(new Font("Arial", Font.BOLD, 20));
         
@@ -147,7 +137,6 @@ public class LevelSelectionMenu extends JFrame {
         diffLabel.setBounds(20, 45, 150, 25);
         panel.add(diffLabel);
         
-        // Descripción
         JLabel descLabel = new JLabel(description);
         descLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         descLabel.setForeground(Color.BLACK);
@@ -163,7 +152,7 @@ public class LevelSelectionMenu extends JFrame {
             backButtonImage = ImageIO.read(getClass().getResourceAsStream(
                 "/images/buttons/backButton.png"));
         } catch (Exception e) {
-            System.out.println("No se pudo cargar backButton.png: " + e.getMessage());
+            System.out.println("Could not load backButton.png");
         }
         
         JButton button;
@@ -179,7 +168,6 @@ public class LevelSelectionMenu extends JFrame {
     }
     
     private void prepareActions() {
-        // Obtener los paneles de nivel
         JPanel mainPanel = (JPanel) getContentPane().getComponent(0);
         JPanel level1Panel = (JPanel) mainPanel.getComponent(1);
         JPanel level2Panel = (JPanel) mainPanel.getComponent(2);
@@ -247,20 +235,9 @@ public class LevelSelectionMenu extends JFrame {
      * Inicia el nivel seleccionado
      */
     private void startLevel(int levelNumber) {
-        try {
-            // Crear el juego con el nivel y sabor seleccionados
-            Game game = new Game(levelNumber, iceCreamFlavor);
-            
-            // Crear la ventana del juego
-            GameWindow gameWindow = new GameWindow(game, levelNumber);
-            gameWindow.setVisible(true);
-            dispose();
-        } catch (BadDopoCreamException e) {
-            JOptionPane.showMessageDialog(this,
-                "Error al iniciar el nivel " + levelNumber + ":\n" + e.getMessage(),
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
-            System.err.println("Error creando nivel: " + e.getMessage());
-        }
+        Game game = new Game(levelNumber, iceCreamFlavor);
+        GameWindow gameWindow = new GameWindow(game, levelNumber);
+        gameWindow.setVisible(true);
+        dispose();
     }
 }

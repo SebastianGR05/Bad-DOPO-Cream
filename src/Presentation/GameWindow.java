@@ -6,7 +6,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 /**
- * Ventana principal del juego con sistema de puntajes
+ * Ventana principal del juego
  */
 public class GameWindow extends JFrame {
     
@@ -106,7 +106,7 @@ public class GameWindow extends JFrame {
         panel.setPreferredSize(new Dimension(800, 80));
         
         JLabel controls = new JLabel(
-            "<html><center>CONTROLS: WASD = Move  |  ESPACIO = Ice Block  |  P/ESC = Pause  |  R = Restart</center></html>"
+            "<html><center>CONTROLS: WASD = Move  |  SPACE = Ice Block  |  P/ESC = Pause  |  R = Restart</center></html>"
         );
         controls.setFont(new Font("Arial", Font.PLAIN, 14));
         panel.add(controls);
@@ -118,7 +118,7 @@ public class GameWindow extends JFrame {
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
                 int confirm = JOptionPane.showConfirmDialog(GameWindow.this,
-                    "¿Exit the game? Current progress will be lost.",
+                    "Exit the game? Current progress will be lost.",
                     "",
                     JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
@@ -172,7 +172,7 @@ public class GameWindow extends JFrame {
                 } 
                 else if (key == KeyEvent.VK_R) {
                     int confirm = JOptionPane.showConfirmDialog(GameWindow.this,
-                        "¿Restart the level? Current progress will be lost.",
+                        "Restart the level? Current progress will be lost.",
                         "",
                         JOptionPane.YES_NO_OPTION);
                     if (confirm == JOptionPane.YES_OPTION) {
@@ -200,9 +200,8 @@ public class GameWindow extends JFrame {
     }
     
     private void updateLabels() {
-        // Actualizar puntaje
         lblScore.setText("Score: " + game.getPlayer().getScore());
-        // Actualizar tiempo
+        
         long timeRemaining = game.getTimeRemaining();
         int minutes = (int) (timeRemaining / 60000);
         int seconds = (int) ((timeRemaining % 60000) / 1000);
@@ -227,10 +226,10 @@ public class GameWindow extends JFrame {
     
     private void showVictoryDialog() {
         int option = JOptionPane.showOptionDialog(this,
-            "¡Congratulations! ¡You have completed level " + levelNumber + "!\n" +
-            "Score obtained " + game.getPlayer().getScore() + "\n" +
-            "¿What's next?",
-            "¡Victory!",
+            "Congratulations! You completed level " + levelNumber + "!\n" +
+            "Score: " + game.getPlayer().getScore() + "\n" +
+            "What's next?",
+            "Victory!",
             JOptionPane.YES_NO_CANCEL_OPTION,
             JOptionPane.INFORMATION_MESSAGE,
             null,
@@ -239,22 +238,15 @@ public class GameWindow extends JFrame {
         
         if (option == 0) {
             if (levelNumber < 3) {
-                try {
-                    Game newGame = new Game(levelNumber + 1, game.getPlayer().getFlavor());
-                    GameWindow newWindow = new GameWindow(newGame, levelNumber + 1);
-                    newWindow.setVisible(true);
-                    dispose();
-                } catch (BadDopoCreamException e) {
-                    JOptionPane.showMessageDialog(this,
-                        "Error al cargar el siguiente nivel: " + e.getMessage(),
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
-                }
+                Game newGame = new Game(levelNumber + 1, game.getPlayer().getFlavor());
+                GameWindow newWindow = new GameWindow(newGame, levelNumber + 1);
+                newWindow.setVisible(true);
+                dispose();
             } else {
                 JOptionPane.showMessageDialog(this, 
-                    "¡You've completed all the levels!\n" +
+                    "You've completed all levels!\n" +
                     "Final score: " + game.getPlayer().getScore(),
-                    "¡Game completed!",
+                    "Game completed!",
                     JOptionPane.INFORMATION_MESSAGE);
                 MainMenu menu = new MainMenu();
                 menu.setVisible(true);
@@ -270,11 +262,10 @@ public class GameWindow extends JFrame {
     }
     
     private void showDefeatDialog() {
-        
         int option = JOptionPane.showConfirmDialog(this,
             "You've been defeated\n" +
-            "Score obtained " + game.getPlayer().getScore() + "\n" +
-            "¿Another try?",
+            "Score: " + game.getPlayer().getScore() + "\n" +
+            "Try again?",
             "Loss",
             JOptionPane.YES_NO_OPTION);
         
@@ -305,9 +296,5 @@ public class GameWindow extends JFrame {
         if (updateTimer != null && updateTimer.isRunning()) {
             updateTimer.stop();
         }
-    }
-    
-    public JPanel getMainPanel() {
-        return (JPanel) getContentPane();
     }
 }
