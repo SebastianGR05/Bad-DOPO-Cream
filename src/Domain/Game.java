@@ -221,17 +221,25 @@ public class Game {
         int targetY = y;
         
         switch(direction) {
-            case "UP": targetY--; break;
-            case "DOWN": targetY++; break;
-            case "LEFT": targetX--; break;
-            case "RIGHT": targetX++; break;
+            case "UP": 
+            	targetY--; 
+            	break;
+            case "DOWN": 
+            	targetY++; 
+            	break;
+            case "LEFT": 
+            	targetX--; 
+            	break;
+            case "RIGHT": 
+            	targetX++; 
+            	break;
         }
         
         if (board.hasIceBlock(targetX, targetY)) {
             board.destroyIceBlocks(x, y, direction);
         } else if (board.isValidPosition(targetX, targetY) && 
                    !board.hasWall(targetX, targetY)) {
-            board.createIceBlock(targetX, targetY);
+            board.createIceBlocks(targetX, targetY,direction);
         }
     }
     

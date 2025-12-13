@@ -31,7 +31,7 @@ public class Board {
         this.grid = new int[this.height][this.width];
         this.iceBlocks = new ArrayList<>();
         this.campfires = new ArrayList<>();
-        this.hotTiles = new ArrayList<>();//e
+        this.hotTiles = new ArrayList<>();
         this.currentLevel = level;
         
         switch(level) {
@@ -42,14 +42,14 @@ public class Board {
                 createLevel2();
                 break;
             case 3:
-                createLevel3(); //e
+                createLevel3();
                 break;
             default:
                 createLevel1();
         }
     }
     
-    private void createLevel1() { //e
+    private void createLevel1() {
         int[][] level1Matrix = {
             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
             {1,6,0,0,0,0,0,0,0,0,0,0,4,0,6,1},
@@ -133,7 +133,7 @@ public class Board {
                     grid[i][j] = 0;
                     HotTile tile = new HotTile(j, i);
                     hotTiles.add(tile);
-                } else if (value == 10) {//e
+                } else if (value == 10) {
                     grid[i][j] = 0;
                     Campfire fire = new Campfire(j, i);
                     campfires.add(fire);
@@ -203,25 +203,65 @@ public class Board {
         return false;
     }
     
-    public void createIceBlock(int x, int y) {
-        if (!isValidPosition(x, y) || hasWall(x, y) || hasIceBlock(x, y)) {
+    /**
+     * Crea una fila de bloques de hielo en la dirección indicada
+     * Se detiene cuando encuentra un obstáculo o el borde del mapa
+     */
+    public void createIceBlocks(int startX, int startY, String direction) {
+        if (!isValidPosition(startX, startY)) {
             return;
         }
         
-        IceBlock newBlock = new IceBlock(x, y);
-        iceBlocks.add(newBlock);
+        int dx = 0; 
+        int dy = 0;
         
-        if (hasHotTile(x, y)) {
-            newBlock.destroy();
+        switch(direction) {
+            case "UP": 
+                dy = -1; 
+                break;
+            case "DOWN": 
+                dy = 1; 
+                break;
+            case "LEFT": 
+                dx = -1; 
+                break;
+            case "RIGHT": 
+                dx = 1; 
+                break;
         }
         
-        for (Campfire fire : campfires) {
-            if (fire.exists() && fire.isOn() &&
-                fire.getPosition().getX() == x && 
-                fire.getPosition().getY() == y) {
-                fire.extinguish();
+        int x = startX;
+        int y = startY;
+        
+        // Crear bloques hasta encontrar un obstáculo
+        while (isValidPosition(x, y) && !hasWall(x, y)) {
+            // Si ya hay un bloque, no crear más
+            if (hasIceBlock(x, y)) {
                 break;
             }
+            
+            // Crear el bloque
+            IceBlock newBlock = new IceBlock(x, y);
+            iceBlocks.add(newBlock);
+            
+            // Si hay baldosa caliente, derretir inmediatamente
+            if (hasHotTile(x, y)) {
+                newBlock.destroy();
+            }
+            
+            // Si hay fogata encendida, apagarla
+            for (Campfire fire : campfires) {
+                if (fire.exists() && fire.isOn() &&
+                    fire.getPosition().getX() == x && 
+                    fire.getPosition().getY() == y) {
+                    fire.extinguish();
+                    break;
+                }
+            }
+            
+            // Avanzar a la siguiente posición
+            x += dx;
+            y += dy;
         }
     }
     
@@ -235,17 +275,17 @@ public class Board {
         
         switch(direction) {
             case "UP": 
-            	dy = -1; 
-            	break;
+                dy = -1; 
+                break;
             case "DOWN": 
-            	dy = 1; 
-            	break;
+                dy = 1; 
+                break;
             case "LEFT": 
-            	dx = -1; 
-            	break;
+                dx = -1; 
+                break;
             case "RIGHT": 
-            	dx = 1; 
-            	break;
+                dx = 1; 
+                break;
         }
         
         int x = startX + dx;
@@ -283,7 +323,7 @@ public class Board {
         }
     }
     
-    public void updateObstacles() {//e
+    public void updateObstacles() {
         for (Campfire fire : campfires) {
             if (fire.exists()) {
                 fire.update();
@@ -300,7 +340,7 @@ public class Board {
         iceBlocks.removeIf(block -> !block.exists());
     }
     
-    public ArrayList<IceBlock> getIceBlocks() {//e
+    public ArrayList<IceBlock> getIceBlocks() {
         return iceBlocks;
     }
     
