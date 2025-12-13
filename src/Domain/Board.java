@@ -31,7 +31,7 @@ public class Board {
         this.grid = new int[this.height][this.width];
         this.iceBlocks = new ArrayList<>();
         this.campfires = new ArrayList<>();
-        this.hotTiles = new ArrayList<>();
+        this.hotTiles = new ArrayList<>();//e
         this.currentLevel = level;
         
         switch(level) {
@@ -42,14 +42,14 @@ public class Board {
                 createLevel2();
                 break;
             case 3:
-                createLevel3();
+                createLevel3(); //e
                 break;
             default:
                 createLevel1();
         }
     }
     
-    private void createLevel1() {
+    private void createLevel1() { //e
         int[][] level1Matrix = {
             {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
             {1,6,0,0,0,0,0,0,0,0,0,0,4,0,6,1},
@@ -124,16 +124,16 @@ public class Board {
                 int value = matrix[i][j];
                 
                 if (value == 1) {
-                    grid[i][j] = 1; // Pared
+                    grid[i][j] = 1;
                 } else if (value == 2) {
-                    grid[i][j] = 0;
+                    grid[i][j] = 0; 
                     IceBlock block = new IceBlock(j, i);
                     iceBlocks.add(block);
                 } else if (value == 9) {
                     grid[i][j] = 0;
                     HotTile tile = new HotTile(j, i);
                     hotTiles.add(tile);
-                } else if (value == 10) {
+                } else if (value == 10) {//e
                     grid[i][j] = 0;
                     Campfire fire = new Campfire(j, i);
                     campfires.add(fire);
@@ -181,7 +181,7 @@ public class Board {
         return false;
     }
     
-    public boolean hasLitCampfire(int x, int y) {
+    public boolean hasCampfireOn(int x, int y) {
         for (Campfire fire : campfires) {
             if (fire.exists() && fire.isOn() &&
                 fire.getPosition().getX() == x && 
@@ -204,7 +204,6 @@ public class Board {
     }
     
     public void createIceBlock(int x, int y) {
-        // Solo crear si la posición es válida
         if (!isValidPosition(x, y) || hasWall(x, y) || hasIceBlock(x, y)) {
             return;
         }
@@ -212,12 +211,10 @@ public class Board {
         IceBlock newBlock = new IceBlock(x, y);
         iceBlocks.add(newBlock);
         
-        // Si hay una baldosa caliente, derretir inmediatamente
         if (hasHotTile(x, y)) {
             newBlock.destroy();
         }
         
-        // Si hay una fogata, apagarla
         for (Campfire fire : campfires) {
             if (fire.exists() && fire.isOn() &&
                 fire.getPosition().getX() == x && 
@@ -233,13 +230,22 @@ public class Board {
             return;
         }
         
-        int dx = 0, dy = 0;
+        int dx = 0; 
+        int dy = 0;
         
         switch(direction) {
-            case "UP": dy = -1; break;
-            case "DOWN": dy = 1; break;
-            case "LEFT": dx = -1; break;
-            case "RIGHT": dx = 1; break;
+            case "UP": 
+            	dy = -1; 
+            	break;
+            case "DOWN": 
+            	dy = 1; 
+            	break;
+            case "LEFT": 
+            	dx = -1; 
+            	break;
+            case "RIGHT": 
+            	dx = 1; 
+            	break;
         }
         
         int x = startX + dx;
@@ -277,7 +283,7 @@ public class Board {
         }
     }
     
-    public void updateObstacles() {
+    public void updateObstacles() {//e
         for (Campfire fire : campfires) {
             if (fire.exists()) {
                 fire.update();
@@ -294,7 +300,7 @@ public class Board {
         iceBlocks.removeIf(block -> !block.exists());
     }
     
-    public ArrayList<IceBlock> getIceBlocks() {
+    public ArrayList<IceBlock> getIceBlocks() {//e
         return iceBlocks;
     }
     

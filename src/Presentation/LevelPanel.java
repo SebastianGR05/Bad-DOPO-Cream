@@ -8,7 +8,6 @@ import java.util.HashMap;
 
 /**
  * Clase base abstracta para todos los paneles de nivel
- * Solo usa excepciones para la carga de imágenes
  */
 public abstract class LevelPanel extends JPanel {
     protected Game game;
@@ -35,7 +34,7 @@ public abstract class LevelPanel extends JPanel {
         loadImage("background", "/images/levels/background.png");
         
         // Bloques
-        loadImage("iceBlock", "/images/blocks/iceBlock.png");
+        loadImage("iceBlock", "/images/blocks/iceBlock.png"); 
         
         // Obstáculos
         loadImage("hotTile", "/images/blocks/hotTile.png");
@@ -100,7 +99,7 @@ public abstract class LevelPanel extends JPanel {
         }
     }
     
-    protected void drawObstacles(Graphics g) {
+    protected void drawObstacles(Graphics g) {//e
         Board board = game.getBoard();
         
         // Dibujar baldosas calientes

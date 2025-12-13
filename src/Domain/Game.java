@@ -80,7 +80,7 @@ public class Game {
                         fruits.add(newFruit);
                         totalScore += newFruit.getPoints();
                         break;
-                    case 8: // Cereza
+                    case 8: // Cereza //e
                         newFruit = new Cherry(x, y);
                         fruits.add(newFruit);
                         totalScore += newFruit.getPoints();
@@ -96,7 +96,7 @@ public class Game {
         pausedTime = 0;
     }
     
-    private void createEnemy(int x, int y, int level) {
+    private void createEnemy(int x, int y, int level) { //e
         switch(level) {
             case 1:
                 enemies.add(new Troll(x, y));
@@ -106,7 +106,7 @@ public class Game {
                 pot.setTarget(player);
                 enemies.add(pot);
                 break;
-            case 3:
+            case 3: //e
                 OrangeSquid squid = new OrangeSquid(x, y);
                 squid.setTarget(player);
                 squid.setBoard(board);
@@ -156,7 +156,7 @@ public class Game {
                     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
                 };
             case 3:
-                return new int[][] {
+                return new int[][] { //e
                     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
                     {1,8,0,0,7,0,0,0,0,0,0,7,0,0,8,1},
                     {1,0,2,2,0,2,2,2,2,2,2,0,2,2,0,1},
@@ -268,11 +268,11 @@ public class Game {
         }
     }
     
-    private void checkObstacleCollision() {
+    private void checkObstacleCollision() {//e
         int x = player.getPosition().getX();
         int y = player.getPosition().getY();
         
-        if (board.hasLitCampfire(x, y)) {
+        if (board.hasCampfireOn(x, y)) {
             player.die();
             gameLost = true;
         }

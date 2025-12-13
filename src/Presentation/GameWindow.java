@@ -50,7 +50,7 @@ public class GameWindow extends JFrame {
             case 2:
                 levelPanel = new Level2Panel(game);
                 break;
-            case 3:
+            case 3: //e
                 levelPanel = new Level3Panel(game);
                 break;
             default:
@@ -237,7 +237,7 @@ public class GameWindow extends JFrame {
             "Next level");
         
         if (option == 0) {
-            if (levelNumber < 3) {
+            if (levelNumber < 3) { //4
                 Game newGame = new Game(levelNumber + 1, game.getPlayer().getFlavor());
                 GameWindow newWindow = new GameWindow(newGame, levelNumber + 1);
                 newWindow.setVisible(true);

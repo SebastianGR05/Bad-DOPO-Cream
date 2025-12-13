@@ -2,9 +2,8 @@ package Domain;
 
 /**
  * Enemigo Calamar Naranja - Persigue al jugador Y puede romper bloques de hielo
- * CORRECCIÓN: Ahora se mueve correctamente después de romper bloques
  */
-public class OrangeSquid extends Enemy {
+public class OrangeSquid extends Enemy { //e
     private IceCream target;
     private Board board;
     
@@ -38,7 +37,7 @@ public class OrangeSquid extends Enemy {
         int newX = currentX;
         int newY = currentY;
         
-        // Determinar dirección de movimiento (priorizar eje con mayor distancia)
+        // Determinar dirección de movimiento
         if (Math.abs(deltaX) > Math.abs(deltaY)) {
             // Moverse horizontalmente
             if (deltaX > 0) {
@@ -55,10 +54,9 @@ public class OrangeSquid extends Enemy {
             }
         }
         
-        // CORRECCIÓN: Si hay un bloque de hielo, romperlo pero SEGUIR intentando moverse
+        // Si hay un bloque de hielo, romperlo y moverse
         if (board.hasIceBlock(newX, newY)) {
             destroyIceBlockAt(newX, newY);
-            // NO hacer return aquí, continuar para intentar moverse
         }
         
         // Intentar moverse si la posición es válida y no hay obstáculos
@@ -90,7 +88,6 @@ public class OrangeSquid extends Enemy {
             // Si hay bloque en la dirección alternativa, romperlo
             if (board.hasIceBlock(newX, newY)) {
                 destroyIceBlockAt(newX, newY);
-                // Continuar para intentar moverse
             }
             
             // Intentar el movimiento alternativo
@@ -104,7 +101,6 @@ public class OrangeSquid extends Enemy {
     
     /**
      * Destruye un bloque de hielo específico en la posición indicada
-     * El calamar rompe de a un bloque a la vez, no en dominó
      */
     private void destroyIceBlockAt(int x, int y) {
         if (board != null) {
@@ -113,7 +109,7 @@ public class OrangeSquid extends Enemy {
                     block.getPosition().getX() == x && 
                     block.getPosition().getY() == y) {
                     block.destroy();
-                    break; // Solo destruir un bloque
+                    break;
                 }
             }
         }

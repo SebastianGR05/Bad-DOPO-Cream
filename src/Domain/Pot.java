@@ -1,12 +1,10 @@
 package Domain;
 
 /**
- * Enemigo Maceta - Persigue al jugador pero no puede romper bloques
- * Este enemigo aparece en el nivel 2 y representa un desafío mayor
- * porque sigue al helado activamente en lugar de moverse en patrón.
+ * Enemigo Maceta, persigue al jugador pero no puede romper bloques
  */
 public class Pot extends Enemy {
-    private IceCream target; // Referencia al jugador para perseguirlo
+    private IceCream target;
     
     /**
      * Constructor que inicializa la maceta en una posición específica
@@ -17,7 +15,6 @@ public class Pot extends Enemy {
     
     /**
      * Establece el objetivo que la maceta debe perseguir
-     * Esto normalmente será el helado del jugador
      */
     public void setTarget(IceCream target) {
         this.target = target;
@@ -25,13 +22,11 @@ public class Pot extends Enemy {
     
     /**
      * Actualiza la posición de la maceta moviéndose hacia el jugador
-     * Usa un algoritmo simple de persecución: se mueve hacia el jugador
-     * primero en el eje donde hay mayor distancia
      */
     @Override
     public void updatePosition(Board board) {
         if (target == null || !target.isAlive()) {
-            return; // No hacer nada si no hay objetivo
+            return;
         }
         
         int playerX = target.getPosition().getX();
@@ -47,7 +42,6 @@ public class Pot extends Enemy {
         int newY = currentY;
         
         // Moverse primero en el eje donde hay mayor distancia
-        // Esto hace que el movimiento sea más natural y predecible
         if (Math.abs(deltaX) > Math.abs(deltaY)) {
             // Moverse horizontalmente
             if (deltaX > 0) {
@@ -65,7 +59,6 @@ public class Pot extends Enemy {
         }
         
         // Verificar que la nueva posición sea válida
-        // La maceta no puede atravesar paredes ni bloques de hielo
         if (board.isValidPosition(newX, newY) && 
             !board.hasWall(newX, newY) && 
             !board.hasIceBlock(newX, newY)) {

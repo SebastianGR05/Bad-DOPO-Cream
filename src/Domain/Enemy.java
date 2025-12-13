@@ -1,7 +1,7 @@
 package Domain;
 
 /**
- * Clase base para todos los enemigos
+ * Clase base para los enemigos
  */
 public abstract class Enemy {
     protected Position position;

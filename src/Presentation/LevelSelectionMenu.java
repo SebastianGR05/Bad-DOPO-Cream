@@ -77,7 +77,7 @@ public class LevelSelectionMenu extends JFrame {
         );
         mainPanel.add(level2Panel);
         
-        JPanel level3Panel = createLevelPanel(
+        JPanel level3Panel = createLevelPanel(//e
             "Level 3", 
             "HARD",
             "1 Squid • 8 Pineapples • 8 Cherries",
@@ -99,7 +99,7 @@ public class LevelSelectionMenu extends JFrame {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                if (hover) {
+                if (hover) { 
                     g.setColor(new Color(255, 255, 255, 250));
                 } else {
                     g.setColor(new Color(255, 255, 255, 230));
@@ -207,7 +207,7 @@ public class LevelSelectionMenu extends JFrame {
             }
         });
         
-        level3Panel.addMouseListener(new MouseAdapter() {
+        level3Panel.addMouseListener(new MouseAdapter() { //e
             @Override
             public void mouseClicked(MouseEvent e) {
                 startLevel(3);

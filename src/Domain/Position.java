@@ -28,9 +28,6 @@ public class Position {
         this.y = y;
     }
     
-    /**
-     * Verifica si esta posición es igual a otra
-     */
     public boolean equals(Position other) {
         return this.x == other.x && this.y == other.y;
     }

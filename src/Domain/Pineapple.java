@@ -4,8 +4,6 @@ import java.util.Random;
 
 /**
  * Representa una piña que se mueve constantemente por el tablero
- * Esta fruta aparece en los niveles 2 y 3, agregando un desafío adicional
- * porque el jugador debe atraparla mientras está en movimiento.
  */
 public class Pineapple extends Fruit {
     private Random random;
@@ -22,12 +20,12 @@ public class Pineapple extends Fruit {
      */
     public void move(Board board) {
         if (collected) {
-            return; // No moverse si ya fue recolectada
+            return;
         }
         
         moveCounter++;
         
-        // Moverse cada 3 actualizaciones para que no sea demasiado rápida
+        // Moverse cada 3 actualizaciones
         if (moveCounter < 3) {
             return;
         }
@@ -38,7 +36,7 @@ public class Pineapple extends Fruit {
         int currentY = position.getY();
         
         // Intentar moverse en una dirección aleatoria
-        int direction = random.nextInt(4); // 0=arriba, 1=derecha, 2=abajo, 3=izquierda
+        int direction = random.nextInt(4);
         int newX = currentX;
         int newY = currentY;
         

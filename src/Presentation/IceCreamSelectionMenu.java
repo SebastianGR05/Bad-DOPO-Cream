@@ -226,7 +226,6 @@ public class IceCreamSelectionMenu extends JFrame {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             g.fillRect(0, 0, getWidth(), getHeight());
-            
             // Dibujar imagen del helado
             g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
         }

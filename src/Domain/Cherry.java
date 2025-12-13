@@ -4,8 +4,6 @@ import java.util.Random;
 
 /**
  * Representa una cereza que se teletransporta aleatoriamente
- * Esta es la fruta más difícil de recolectar porque desaparece y reaparece
- * en diferentes posiciones del tablero.
  */
 public class Cherry extends Fruit {
     private Random random;
@@ -20,7 +18,6 @@ public class Cherry extends Fruit {
     
     /**
      * Teletransporta la cereza a una posición aleatoria válida en el tablero
-     * Este método debe llamarse periódicamente desde el Game
      */
     public void teleport(Board board) {
         if (collected) {

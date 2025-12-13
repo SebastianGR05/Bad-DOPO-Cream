@@ -1,10 +1,10 @@
 package Domain;
 
 /**
- * Enemigo Troll - Se mueve en patrón horizontal/vertical
+ * Enemigo Troll, se mueve en patrón horizontal/vertical
  */
 public class Troll extends Enemy {
-    private int direction; // 0=derecha, 1=abajo, 2=izquierda, 3=arriba
+    private int direction;
     private int stepCount;
     private int maxSteps;
     
@@ -12,14 +12,13 @@ public class Troll extends Enemy {
         super(x, y, "TROLL");
         this.direction = 0;
         this.stepCount = 0;
-        this.maxSteps = 14; // Cambia de dirección cada 4 pasos
+        this.maxSteps = 14; // Cambia de dirección cada 14 pasos
     }
     
     @Override
     public void updatePosition(Board board) {
         stepCount++;
         
-        // Cambiar dirección cada maxSteps
         if (stepCount >= maxSteps) {
             direction = (direction + 1) % 4;
             stepCount = 0;

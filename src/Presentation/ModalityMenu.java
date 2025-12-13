@@ -7,7 +7,7 @@ import javax.imageio.ImageIO;
 
 /**
  * Menú de selección de modalidad de juego
- * Permite elegir entre Player vs Player, Player vs Machine, y Machine vs Machine
+ * Permite elegir entre Player vs Player, Player, y Machine vs Machine
  */
 public class ModalityMenu extends JFrame {
     
