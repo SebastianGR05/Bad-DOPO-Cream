@@ -133,7 +133,7 @@ public class ModalityMenu extends JFrame {
             backButtonImage = ImageIO.read(getClass().getResourceAsStream(
                 "/images/buttons/backButton.png"));
         } catch (Exception e) {
-            System.out.println("No se pudo cargar backButton.png: " + e.getMessage());
+            System.out.println("Could not load backButton.png: " + e.getMessage());
         }
         
         JButton button;

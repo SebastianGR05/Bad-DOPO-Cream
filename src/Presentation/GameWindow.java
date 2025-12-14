@@ -174,7 +174,7 @@ public class GameWindow extends JFrame {
             public void keyPressed(KeyEvent e) {
                 int key = e.getKeyCode();
                 
-                // Movement controls (arrow keys or WASD)
+                // Movement controls  WASD
                 if (key == KeyEvent.VK_UP || key == KeyEvent.VK_W) {
                     game.movePlayer("UP");
                 } else if (key == KeyEvent.VK_DOWN || key == KeyEvent.VK_S) {
