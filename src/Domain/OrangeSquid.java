@@ -1,24 +1,43 @@
 package Domain;
 
 /**
- * Enemigo Calamar Naranja - Persigue al jugador Y puede romper bloques de hielo
+ * Represents an Orange Squid enemy in the game.
+ * They chase the player and can destroy ice blocks in their path.
+ * They break one ice block at a time before they move.
  */
-public class OrangeSquid extends Enemy { //e
+public class OrangeSquid extends Enemy {
     private IceCream target;
     private Board board;
     
+    /**
+     * Creates a new Orange Squid at the specified position.
+     * @param x the horizontal position on the board
+     * @param y the vertical position on the board
+     */
     public OrangeSquid(int x, int y) {
         super(x, y, "SQUID");
     }
     
+    /**
+     * Sets the target(player) that the squid will chase.
+     * @param target the ice cream to pursue
+     */
     public void setTarget(IceCream target) {
         this.target = target;
     }
     
+    /**
+     * Sets the board reference needed to break ice blocks.
+     * @param board the game board
+     */
     public void setBoard(Board board) {
         this.board = board;
     }
     
+    /**
+     * Updates the squid's position to chase the target player.
+     * @param board the game board used to check for obstacles and break ice blocks
+     */
     @Override
     public void updatePosition(Board board) {
         if (target == null || !target.isAlive()) {
@@ -37,16 +56,16 @@ public class OrangeSquid extends Enemy { //e
         int newX = currentX;
         int newY = currentY;
         
-        // Determinar dirección de movimiento
+        // Determine movement direction
         if (Math.abs(deltaX) > Math.abs(deltaY)) {
-            // Moverse horizontalmente
+            // Move horizontally
             if (deltaX > 0) {
                 newX++;
             } else if (deltaX < 0) {
                 newX--;
             }
         } else {
-            // Moverse verticalmente
+            // Move vertically
             if (deltaY > 0) {
                 newY++;
             } else if (deltaY < 0) {
@@ -54,30 +73,30 @@ public class OrangeSquid extends Enemy { //e
             }
         }
         
-        // Si hay un bloque de hielo, romperlo y moverse
+        // If there's an ice block, break it and move
         if (board.hasIceBlock(newX, newY)) {
             destroyIceBlockAt(newX, newY);
         }
         
-        // Intentar moverse si la posición es válida y no hay obstáculos
+        // Try to move if position is valid and obstacle-free
         if (board.isValidPosition(newX, newY) && 
             !board.hasWall(newX, newY) && 
             !board.hasIceBlock(newX, newY)) {
             move(newX, newY);
         } else {
-            // Si no puede moverse en la dirección principal, intentar alternativa
+            // If can't move in main direction, try alternative
             newX = currentX;
             newY = currentY;
             
             if (Math.abs(deltaX) > Math.abs(deltaY)) {
-                // Intentar moverse verticalmente
+                // Try moving vertically
                 if (deltaY > 0) {
                     newY++;
                 } else if (deltaY < 0) {
                     newY--;
                 }
             } else {
-                // Intentar moverse horizontalmente
+                // Try moving horizontally
                 if (deltaX > 0) {
                     newX++;
                 } else if (deltaX < 0) {
@@ -85,12 +104,12 @@ public class OrangeSquid extends Enemy { //e
                 }
             }
             
-            // Si hay bloque en la dirección alternativa, romperlo
+            // If there's an ice block in alternative direction, break it
             if (board.hasIceBlock(newX, newY)) {
                 destroyIceBlockAt(newX, newY);
             }
             
-            // Intentar el movimiento alternativo
+            // Try the alternative movement
             if (board.isValidPosition(newX, newY) && 
                 !board.hasWall(newX, newY) && 
                 !board.hasIceBlock(newX, newY)) {
@@ -100,7 +119,9 @@ public class OrangeSquid extends Enemy { //e
     }
     
     /**
-     * Destruye un bloque de hielo específico en la posición indicada
+     * Destroy an ice block at the given position.
+     * @param x the horizontal position of the ice block
+     * @param y the vertical position of the ice block
      */
     private void destroyIceBlockAt(int x, int y) {
         if (board != null) {

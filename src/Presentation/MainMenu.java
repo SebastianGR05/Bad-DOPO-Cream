@@ -6,8 +6,8 @@ import java.awt.event.*;
 import javax.imageio.ImageIO;
 
 /**
- * Menú principal del juego Bad DOPO-Cream
- * Primera pantalla que ve el jugador al iniciar el juego
+ * Main menu screen of the Bad DOPO-Cream game.
+ * This is the first screen the player sees when starting the game.
  */
 public class MainMenu extends JFrame {
     
@@ -15,26 +15,32 @@ public class MainMenu extends JFrame {
     private JButton btnExit;
     private Image backgroundImage;
     
+    /**
+     * Creates the main menu window.
+     */
     public MainMenu() {
         prepareElements();
         prepareActions();
     }
     
+    /**
+     * Sets up all visual elements of the main menu.
+     */
     private void prepareElements() {
         setSize(900, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(false);
         
-        // Cargar imagen de fondo del menú principal
+        // Load main menu background image
         try {
             backgroundImage = ImageIO.read(getClass().getResourceAsStream(
                 "/images/menu/principalMenu.png"));
         } catch (Exception e) {
-            System.out.println("No se pudo cargar principalMenu.png: " + e.getMessage());
+            System.out.println("Could not load principalMenu.png: " + e.getMessage());
         }
         
-        // Panel principal con imagen de fondo
+        // Main panel with background image
         JPanel mainPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -44,11 +50,11 @@ public class MainMenu extends JFrame {
         };
         mainPanel.setLayout(null);
         
-        // Botón JUGAR (invisible sobre la imagen)
+        // PLAY button 
         btnPlay = createInvisibleButton(275, 480, 340, 50);
         mainPanel.add(btnPlay);
         
-        // Botón SALIR (invisible, debajo del botón jugar)
+        // EXIT button
         btnExit = createInvisibleButton(275, 590, 340, 50);
         mainPanel.add(btnExit);
         
@@ -56,7 +62,12 @@ public class MainMenu extends JFrame {
     }
     
     /**
-     * Crea un botón invisible que se coloca sobre la imagen
+     * Creates an invisible button that overlays the background image.
+     * @param x the horizontal position
+     * @param y the vertical position
+     * @param width the button width
+     * @param height the button height
+     * @return a configured invisible button with hover effects
      */
     private JButton createInvisibleButton(int x, int y, int width, int height) {
         JButton button = new JButton();
@@ -67,7 +78,7 @@ public class MainMenu extends JFrame {
         button.setFocusPainted(false);
         button.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
-        // Efecto hover sutil
+        // Subtle hover effect
         button.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -84,11 +95,11 @@ public class MainMenu extends JFrame {
     }
     
     /**
-     * Configura las acciones de los botones
+     * Configures the behavior of all buttons in the main menu.
      */
     private void prepareActions() {
         btnPlay.addActionListener(e -> {
-            // Abrir menú de selección de modalidad
+            // Open modality selection menu
             ModalityMenu modalityMenu = new ModalityMenu();
             modalityMenu.setVisible(true);
             dispose();
@@ -96,7 +107,7 @@ public class MainMenu extends JFrame {
         
         btnExit.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(this,
-                "¿Seguro que deseas salir?",
+                "¿Are you sure you want to exit?",
                 "",
                 JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
@@ -106,13 +117,11 @@ public class MainMenu extends JFrame {
     }
     
     /**
-     * Método principal para iniciar el juego
+     * Main method to start the game application.
+     * @param args command line arguments (not used)
      */
     public static void main(String[] args) {
             MainMenu menu = new MainMenu();
             menu.setVisible(true);
     }
-    
-    
-    
 }

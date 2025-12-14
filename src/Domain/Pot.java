@@ -1,27 +1,32 @@
 package Domain;
 
 /**
- * Enemigo Maceta, persigue al jugador pero no puede romper bloques
+ * Represents a Pot enemy in the game.
+ * They chase the player and cannot break ice blocks.
  */
 public class Pot extends Enemy {
     private IceCream target;
     
     /**
-     * Constructor que inicializa la maceta en una posición específica
+     * Creates a new Pot at the specified position.
+     * @param x the horizontal position on the board
+     * @param y the vertical position on the board
      */
     public Pot(int x, int y) {
         super(x, y, "POT");
     }
     
     /**
-     * Establece el objetivo que la maceta debe perseguir
+     * Sets the target(player) that the pot will chase.
+     * @param target the ice cream that will chase
      */
     public void setTarget(IceCream target) {
         this.target = target;
     }
     
     /**
-     * Actualiza la posición de la maceta moviéndose hacia el jugador
+     * Updates the pot's position to chase the target player.
+     * @param board the game board used to check for obstacles
      */
     @Override
     public void updatePosition(Board board) {
@@ -34,49 +39,49 @@ public class Pot extends Enemy {
         int currentX = position.getX();
         int currentY = position.getY();
         
-        // Calcular diferencias en ambos ejes
+        // Calculate distance in both axes
         int deltaX = playerX - currentX;
         int deltaY = playerY - currentY;
         
         int newX = currentX;
         int newY = currentY;
         
-        // Moverse primero en el eje donde hay mayor distancia
+        // Move first along the axis with bigger distance
         if (Math.abs(deltaX) > Math.abs(deltaY)) {
-            // Moverse horizontalmente
+            // Move horizontally
             if (deltaX > 0) {
-                newX++; // Moverse a la derecha
+                newX++; // Move right
             } else if (deltaX < 0) {
-                newX--; // Moverse a la izquierda
+                newX--; // Move left
             }
         } else {
-            // Moverse verticalmente
+            // Move vertically
             if (deltaY > 0) {
-                newY++; // Moverse hacia abajo
+                newY++; // Move down
             } else if (deltaY < 0) {
-                newY--; // Moverse hacia arriba
+                newY--; // Move up
             }
         }
         
-        // Verificar que la nueva posición sea válida
+        // Check if the new position is valid
         if (board.isValidPosition(newX, newY) && 
             !board.hasWall(newX, newY) && 
             !board.hasIceBlock(newX, newY)) {
             move(newX, newY);
         } else {
-            // Si no puede moverse en la dirección principal, intentar la otra
+            // If can't move in the main direction, try the other axis
             newX = currentX;
             newY = currentY;
             
             if (Math.abs(deltaX) > Math.abs(deltaY)) {
-                // Intentar moverse verticalmente en su lugar
+                // Try moving vertically instead
                 if (deltaY > 0) {
                     newY++;
                 } else if (deltaY < 0) {
                     newY--;
                 }
             } else {
-                // Intentar moverse horizontalmente en su lugar
+                // Try moving horizontally instead
                 if (deltaX > 0) {
                     newX++;
                 } else if (deltaX < 0) {

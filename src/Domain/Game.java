@@ -3,7 +3,11 @@ package Domain;
 import java.util.ArrayList;
 
 /**
- * Clase principal que maneja toda la lógica del juego
+ * Main game controller that manages all game logic and state.
+ * This class handles player movement, fruit collection, enemy behavior,
+ * win/loss conditions, time limits, and level progression.
+ * It coordinates all game elements (board, player, enemies, fruits) and
+ * makes sure they interact correctly according to the game rules.
  */
 public class Game {
     private Board board;
@@ -15,13 +19,18 @@ public class Game {
     private boolean gameWon;
     private boolean gameLost;
     private long startTime;
-    private final long TIME_LIMIT = 180000; // 3 minutos
+    private final long TIME_LIMIT = 180000; // 3 minutes in milliseconds
     private boolean paused;
     private int currentLevel;
     private String playerFlavor;
     private long pausedTime;
     private long lastPauseStart;
     
+    /**
+     * Creates a new game instance for the specified level and player flavor.
+     * @param level the level number to play: 1, 2 or 3
+     * @param flavor the ice cream flavor for the player: "VANILLA", "STRAWBERRY" or "CHOCOLATE"
+     */
     public Game(int level, String flavor) {
         this.currentLevel = level;
         this.playerFlavor = flavor;
@@ -32,6 +41,10 @@ public class Game {
         this.paused = false;
     }
     
+    /**
+     * Initializes all game elements for a specific level.
+     * @param level the level number to initialize
+     */
     private void initializeLevel(int level) {
         enemies = new ArrayList<>();
         fruits = new ArrayList<>();
@@ -39,7 +52,7 @@ public class Game {
         
         int[][] levelMatrix = getLevelMatrix(level);
         
-        // Crear jugador primero
+        // Create player first
         for (int y = 0; y < 16; y++) {
             for (int x = 0; x < 16; x++) {
                 int value = levelMatrix[y][x];
@@ -53,16 +66,16 @@ public class Game {
             }
         }
         
-        // Crear enemigos y frutas
+        // Create enemies and fruits
         for (int y = 0; y < 16; y++) {
             for (int x = 0; x < 16; x++) {
                 int value = levelMatrix[y][x];
                 Fruit newFruit = null;
                 
                 switch(value) {
-                    case 3: // Jugador ya creado
+                    case 3: // Player already created
                         break;
-                    case 4: // Enemigo
+                    case 4: // Enemy
                         createEnemy(x, y, level);
                         break;
                     case 5: // Banana
@@ -70,17 +83,17 @@ public class Game {
                         fruits.add(newFruit);
                         totalScore += newFruit.getPoints();
                         break;
-                    case 6: // Uvas
+                    case 6: // Grapes
                         newFruit = new Grape(x, y);
                         fruits.add(newFruit);
                         totalScore += newFruit.getPoints();
                         break;
-                    case 7: // Piña
+                    case 7: // Pineapple
                         newFruit = new Pineapple(x, y);
                         fruits.add(newFruit);
                         totalScore += newFruit.getPoints();
                         break;
-                    case 8: // Cereza //e
+                    case 8: // Cherry
                         newFruit = new Cherry(x, y);
                         fruits.add(newFruit);
                         totalScore += newFruit.getPoints();
@@ -96,7 +109,13 @@ public class Game {
         pausedTime = 0;
     }
     
-    private void createEnemy(int x, int y, int level) { //e
+    /**
+     * Creates an enemy for the level at the specified position.
+     * @param x the horizontal spawn position
+     * @param y the vertical spawn position
+     * @param level the level number determining enemy type
+     */
+    private void createEnemy(int x, int y, int level) {
         switch(level) {
             case 1:
                 enemies.add(new Troll(x, y));
@@ -106,7 +125,7 @@ public class Game {
                 pot.setTarget(player);
                 enemies.add(pot);
                 break;
-            case 3: //e
+            case 3:
                 OrangeSquid squid = new OrangeSquid(x, y);
                 squid.setTarget(player);
                 squid.setBoard(board);
@@ -115,6 +134,11 @@ public class Game {
         }
     }
     
+    /**
+     * Gets the level matrix for the specified level number.
+     * @param level the level number (1, 2, or 3)
+     * @return a 2D array representing the level layout
+     */
     private int[][] getLevelMatrix(int level) {
         switch(level) {
             case 1:
@@ -156,7 +180,7 @@ public class Game {
                     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}
                 };
             case 3:
-                return new int[][] { //e
+                return new int[][] {
                     {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
                     {1,8,0,0,7,0,0,0,0,0,0,7,0,0,8,1},
                     {1,0,2,2,0,2,2,2,2,2,2,0,2,2,0,1},
@@ -179,6 +203,10 @@ public class Game {
         }
     }
     
+    /**
+     * Moves the player in the specified direction if possible.
+     * @param direction the direction to move: "UP", "DOWN", "LEFT", "RIGHT"
+     */
     public void movePlayer(String direction) {
         if (paused || gameLost || gameWon) {
             return;
@@ -208,6 +236,9 @@ public class Game {
         }
     }
     
+    /**
+     * Handles ice block creation or destruction based on the player's facing direction.
+     */
     public void handleIceBlock() {
         if (paused || gameLost || gameWon) {
             return;
@@ -239,10 +270,13 @@ public class Game {
             board.destroyIceBlocks(x, y, direction);
         } else if (board.isValidPosition(targetX, targetY) && 
                    !board.hasWall(targetX, targetY)) {
-            board.createIceBlocks(targetX, targetY,direction);
+            board.createIceBlocks(targetX, targetY, direction);
         }
     }
     
+    /**
+     * Checks if the player is standing on a fruit to collect it.
+     */
     private void checkFruitCollection() {
         int x = player.getPosition().getX();
         int y = player.getPosition().getY();
@@ -262,6 +296,9 @@ public class Game {
         }
     }
     
+    /**
+     * Checks if the player is touching an enemy.
+     */
     private void checkEnemyCollision() {
         int x = player.getPosition().getX();
         int y = player.getPosition().getY();
@@ -276,7 +313,10 @@ public class Game {
         }
     }
     
-    private void checkObstacleCollision() {//e
+    /**
+     * Checks if the player is touching a lethal obstacle.
+     */
+    private void checkObstacleCollision() {
         int x = player.getPosition().getX();
         int y = player.getPosition().getY();
         
@@ -286,6 +326,9 @@ public class Game {
         }
     }
     
+    /**
+     * Updates all dynamic game elements.
+     */
     public void update() {
         if (paused || gameLost || gameWon) {
             return;
@@ -315,6 +358,9 @@ public class Game {
         board.cleanDestroyedBlocks();
     }
     
+    /**
+     * Toggles the pause state of the game.
+     */
     public void togglePause() {
         if (paused) {
             long pauseDuration = System.currentTimeMillis() - lastPauseStart;
@@ -326,34 +372,66 @@ public class Game {
         }
     }
     
+    /**
+     * Checks if the game is currently paused.
+     * @return true if paused, false if running
+     */
     public boolean isPaused() {
         return paused;
     }
     
+    /**
+     * Gets the game board.
+     * @return the Board object
+     */
     public Board getBoard() {
         return board;
     }
     
+    /**
+     * Gets the player's ice cream character.
+     * @return the IceCream object representing the player
+     */
     public IceCream getPlayer() {
         return player;
     }
     
+    /**
+     * Gets the array of all the enemies in the game.
+     * @return ArrayList of Enemy objects
+     */
     public ArrayList<Enemy> getEnemies() {
         return enemies;
     }
     
+    /**
+     * Gets the array of all the fruits in the game.
+     * @return ArrayList of Fruit objects
+     */
     public ArrayList<Fruit> getFruits() {
         return fruits;
     }
     
+    /**
+     * Checks if the game has been won.
+     * @return true if game is won, false otherwise
+     */
     public boolean isGameWon() {
         return gameWon;
     }
     
+    /**
+     * Checks if the game has been lost.
+     * @return true if game is lost, false otherwise
+     */
     public boolean isGameLost() {
         return gameLost;
     }
     
+    /**
+     * Gets the time remaining in the level in milliseconds.
+     * @return time remaining in milliseconds (minimum 0)
+     */
     public long getTimeRemaining() {
         long elapsed = System.currentTimeMillis() - startTime - pausedTime;
         if (paused) {
@@ -364,18 +442,33 @@ public class Game {
         return Math.max(0, remaining);
     }
     
+    /**
+     * Gets the total number of fruits in the level.
+     * @return the total fruit count
+     */
     public int getTotalFruits() {
         return totalFruits;
     }
     
+    /**
+     * Gets the total score for the level.
+     * @return the total possible score
+     */
     public int getTotalScore() {
         return totalScore;
     }
     
+    /**
+     * Gets the current level number.
+     * @return the level number: 1, 2 or 3
+     */
     public int getCurrentLevel() {
         return currentLevel;
     }
     
+    /**
+     * Restarts the current level.
+     */
     public void restart() {
         enemies.clear();
         fruits.clear();

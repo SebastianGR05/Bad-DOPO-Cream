@@ -3,20 +3,29 @@ package Domain;
 import java.util.Random;
 
 /**
- * Representa una piña que se mueve constantemente por el tablero
+ * Represents a pineapple fruit in the game.
+ * Pineapples move randomly around the board every game update and are worth 200 points.
  */
 public class Pineapple extends Fruit {
     private Random random;
-    private int moveCounter; // Contador para controlar la frecuencia de movimiento
+    private int moveCounter; // Counter to control movement frequency
     
+    /**
+     * Creates a new pineapple at the specified position.
+     * The pineapple is worth 200 points and will move randomly every few updates.
+     * 
+     * @param x the horizontal position on the board
+     * @param y the vertical position on the board
+     */
     public Pineapple(int x, int y) {
-        super(x, y, "PINEAPPLE",200);
+        super(x, y, "PINEAPPLE", 200);
         this.random = new Random();
         this.moveCounter = 0;
     }
     
     /**
-     * Mueve la piña a una posición adyacente aleatoria si es posible
+     * Moves the pineapple to a random adjacent position if possible.
+     * @param board the game board used to check for valid positions to move
      */
     public void move(Board board) {
         if (collected) {
@@ -25,8 +34,8 @@ public class Pineapple extends Fruit {
         
         moveCounter++;
         
-        // Moverse cada 3 actualizaciones
-        if (moveCounter < 3) {
+        // Move every update
+        if (moveCounter < 1) {
             return;
         }
         
@@ -35,7 +44,7 @@ public class Pineapple extends Fruit {
         int currentX = position.getX();
         int currentY = position.getY();
         
-        // Intentar moverse en una dirección aleatoria
+        // Try to move in a random direction
         int direction = random.nextInt(4);
         int newX = currentX;
         int newY = currentY;
@@ -43,19 +52,19 @@ public class Pineapple extends Fruit {
         switch(direction) {
             case 0: 
             	newY--; 
-            	break; // Arriba
+            	break; // Up
             case 1: 
             	newX++; 
-            	break; // Derecha
+            	break; // Right
             case 2: 
             	newY++; 
-            	break; // Abajo
+            	break; // Down
             case 3: 
             	newX--; 
-            	break; // Izquierda
+            	break; // Left
         }
         
-        // Verificar que la nueva posición sea válida
+        // Check that the new position is valid
         if (board.isValidPosition(newX, newY) && 
             !board.hasWall(newX, newY) && 
             !board.hasIceBlock(newX, newY)) {

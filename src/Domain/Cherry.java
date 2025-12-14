@@ -3,25 +3,33 @@ package Domain;
 import java.util.Random;
 
 /**
- * Representa una cereza que se teletransporta aleatoriamente
+ * Represents a cherry fruit in the game.
+ * Cherries are partially static fruits that teleport to random positions
+ * every 20 seconds and they are worth 150 points.
  */
 public class Cherry extends Fruit {
     private Random random;
     private int teleportCounter;
-    private final int TELEPORT_INTERVAL = 20; // Se teletransporta cada 5 actualizaciones
+    private final int TELEPORT_INTERVAL = 40; // Teleports every 40 updates
     
+    /**
+     * Creates a new cherry at the specified position.
+     * @param x the horizontal position on the board
+     * @param y the vertical position on the board
+     */
     public Cherry(int x, int y) {
-        super(x, y, "CHERRY",150);
+        super(x, y, "CHERRY", 150);
         this.random = new Random();
         this.teleportCounter = 0;
     }
     
     /**
-     * Teletransporta la cereza a una posición aleatoria válida en el tablero
+     * Teleport the cherry to a random valid position on the board.
+     * @param board the game board used to check for valid positions to move
      */
     public void teleport(Board board) {
         if (collected) {
-            return; // No teletransportarse si ya fue recolectada
+            return; // Don't teleport if already collected
         }
         
         teleportCounter++;
@@ -32,15 +40,15 @@ public class Cherry extends Fruit {
         
         teleportCounter = 0;
         
-        // Intentar encontrar una posición válida para teletransportarse
+        // Try to find a valid position to teleport to
         int attempts = 0;
-        int maxAttempts = 50; // Evitar bucles infinitos
+        int maxAttempts = 50; // Avoid infinite loops
         
         while (attempts < maxAttempts) {
             int newX = 1 + random.nextInt(board.getWidth() - 2);
             int newY = 1 + random.nextInt(board.getHeight() - 2);
             
-            // Verificar que sea una posición válida y vacía
+            // Check that it's a valid and empty position
             if (board.isValidPosition(newX, newY) && 
                 !board.hasWall(newX, newY) && 
                 !board.hasIceBlock(newX, newY)) {

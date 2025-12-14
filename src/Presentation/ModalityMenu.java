@@ -6,8 +6,11 @@ import java.awt.event.*;
 import javax.imageio.ImageIO;
 
 /**
- * Menú de selección de modalidad de juego
- * Permite elegir entre Player vs Player, Player, y Machine vs Machine
+ * Game modality selection menu.
+ * Allows players to choose between different game modes:
+ * Player vs Player (PvP), not implemented
+ * Player (single player mode), fully functional
+ * Machine vs Machine (MvM), not implemented
  */
 public class ModalityMenu extends JFrame {
     
@@ -17,11 +20,17 @@ public class ModalityMenu extends JFrame {
     private JButton btnBack;
     private Image backgroundImage;
     
+    /**
+     * Creates the modality selection menu window.
+     */
     public ModalityMenu() {
         prepareElements();
         prepareActions();
     }
     
+    /**
+     * Sets up all visual elements of the modality menu.
+     */
     private void prepareElements() {
         setTitle("Seleccionar Modalidad");
         setSize(900, 700);
@@ -29,15 +38,15 @@ public class ModalityMenu extends JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
         
-        // Cargar imagen de fondo común para menús
+        // Load common menu background image
         try {
             backgroundImage = ImageIO.read(getClass().getResourceAsStream(
                 "/images/menu/menusBackground.png"));
         } catch (Exception e) {
-            System.out.println("No se pudo cargar menusBackground.png: " + e.getMessage());
+            System.out.println("Could not load menusBackground.png: " + e.getMessage());
         }
         
-        // Panel principal
+        // Main panel with background
         JPanel mainPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -57,7 +66,7 @@ public class ModalityMenu extends JFrame {
         };
         mainPanel.setLayout(null);
         
-        // Titulo
+        // Title
         JLabel title = new JLabel("Choose the Game Mode");
         title.setFont(new Font("Arial", Font.BOLD, 48));
         title.setForeground(Color.BLACK);
@@ -65,7 +74,7 @@ public class ModalityMenu extends JFrame {
         title.setHorizontalAlignment(SwingConstants.CENTER);
         mainPanel.add(title);
         
-        // Botones de modo de juego
+        // Game mode buttons
         btnPvP = createModalityButton("Player vs Player", 150, 200);
         btnP = createModalityButton("Player", 150, 290);
         btnMvM = createModalityButton("Machine vs Machine", 150, 380);
@@ -74,14 +83,20 @@ public class ModalityMenu extends JFrame {
         mainPanel.add(btnP);
         mainPanel.add(btnMvM);
         
-        
-        // Botón de regresar
+        // Back button
         btnBack = createBackButton();
         mainPanel.add(btnBack);
         
         add(mainPanel);
     }
     
+    /**
+     * Creates a styled button for selecting a game modality.
+     * @param text the text to display on the button
+     * @param x the horizontal position
+     * @param y the vertical position
+     * @return a configured modality button
+     */
     private JButton createModalityButton(String text, int x, int y) {
         JButton button = new JButton(text);
         button.setBounds(x, y, 600, 70);
@@ -107,8 +122,12 @@ public class ModalityMenu extends JFrame {
         return button;
     }
     
+    /**
+     * Creates a back button with an image.
+     * @return a configured back button
+     */
     private JButton createBackButton() {
-        // Intentar cargar imagen del botón de regresar
+        // Try to load back button image
         Image backButtonImage = null;
         try {
             backButtonImage = ImageIO.read(getClass().getResourceAsStream(
@@ -118,7 +137,7 @@ public class ModalityMenu extends JFrame {
         }
         
         JButton button;
-        // Usar imagen del boton
+        // Use button image
         button = new JButton(new ImageIcon(backButtonImage));
         button.setBounds(370, 500, 160, 60);
         button.setBorderPainted(false);
@@ -130,9 +149,12 @@ public class ModalityMenu extends JFrame {
         return button;
     }
     
+    /**
+     * Configures the behavior of all buttons in the modality menu.
+     */
     private void prepareActions() {
         btnPvP.addActionListener(e -> {
-            // PvP no está implementado
+            // PvP not implemented
             JOptionPane.showMessageDialog(this,
                 "The mode Player vs Player it's not available.\n",
                 "Warning",
@@ -140,14 +162,14 @@ public class ModalityMenu extends JFrame {
         });
         
         btnP.addActionListener(e -> {
-            // Abrir menú de selección de helado
+            // Open ice cream selection menu
             IceCreamSelectionMenu iceCreamMenu = new IceCreamSelectionMenu();
             iceCreamMenu.setVisible(true);
             dispose();
         });
         
         btnMvM.addActionListener(e -> {
-            // MvM no está implementado
+            // MvM not implemented
             JOptionPane.showMessageDialog(this,
                 "The mode Machine vs Machine it's not available.\n",
                 "Warning",

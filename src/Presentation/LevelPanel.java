@@ -7,13 +7,19 @@ import javax.imageio.ImageIO;
 import java.util.HashMap;
 
 /**
- * Clase base abstracta para todos los paneles de nivel
+ * Abstract base class for all level display panels.
+ * This class handles the visual representation of the game board.
+ * Each specific level extends this and implements how to draw their specific enemy types.
  */
 public abstract class LevelPanel extends JPanel {
     protected Game game;
     protected final int CELL_SIZE = 30;
     protected HashMap<String, Image> images;
     
+    /**
+     * Creates a new level panel for the given game.
+     * @param game the Game instance to display
+     */
     public LevelPanel(Game game) {
         this.game = game;
         this.images = new HashMap<>();
@@ -25,41 +31,43 @@ public abstract class LevelPanel extends JPanel {
     }
     
     /**
-     * Carga todas las imágenes necesarias
+     * Loads all images needed for rendering the game.
      */
     private void loadAllImages() {
-        // Imágenes del tablero
+        // Board images
         loadImage("floor", "/images/levels/floor.png");
         loadImage("wall", "/images/blocks/wall.png");
         loadImage("background", "/images/levels/background.png");
         
-        // Bloques
+        // Blocks
         loadImage("iceBlock", "/images/blocks/iceBlock.png"); 
         
-        // Obstáculos
+        // Obstacles
         loadImage("hotTile", "/images/blocks/hotTile.png");
         loadImage("campfireOn", "/images/blocks/campfireOn.png");
         loadImage("campfireOff", "/images/blocks/campfireOff.png");
         
-        // Helados
+        // Ice creams
         loadImage("vanilla", "/images/characters/vanillaAnimated.gif");
         loadImage("strawberry", "/images/characters/strawberryAnimated.png");
         loadImage("chocolate", "/images/characters/chocolateAnimated.png");
         
-        // Frutas
+        // Fruits
         loadImage("grape", "/images/fruits/grapes.png");
         loadImage("banana", "/images/fruits/banana.png");
         loadImage("pineapple", "/images/fruits/pineapple.png");
         loadImage("cherry", "/images/fruits/cherry.png");
         
-        // Enemigos
+        // Enemies
         loadImage("troll", "/images/enemies/troll.gif");
         loadImage("pot", "/images/enemies/pot.png");
         loadImage("squid", "/images/enemies/orangeSquid.png");
     }
     
     /**
-     * Intenta cargar una imagen
+     * Attempts to load a single image from resources.
+     * @param key the identifier to store this image under
+     * @param path the resource path to the image file
      */
     private void loadImage(String key, String path) {
         try {
@@ -74,11 +82,15 @@ public abstract class LevelPanel extends JPanel {
         }
     }
     
+    /**
+     * Paints the entire game state on this panel.
+     * @param g the graphics context to draw on
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         
-        // Dibujar en orden de capas
+        // Draw in layer order
         drawBackground(g);
         drawBoard(g);
         drawIceBlocks(g);
@@ -92,6 +104,10 @@ public abstract class LevelPanel extends JPanel {
         }
     }
     
+    /**
+     * Draws the background image across the entire panel.
+     * @param g the graphics context
+     */
     protected void drawBackground(Graphics g) {
         Image bg = images.get("background");
         if (bg != null) {
@@ -99,10 +115,14 @@ public abstract class LevelPanel extends JPanel {
         }
     }
     
-    protected void drawObstacles(Graphics g) {//e
+    /**
+     * Draws all obstacles on the board.
+     * @param g the graphics context
+     */
+    protected void drawObstacles(Graphics g) {
         Board board = game.getBoard();
         
-        // Dibujar baldosas calientes
+        // Draw hot tiles
         for (HotTile tile : board.getHotTiles()) {
             if (tile.exists()) {
                 int x = tile.getPosition().getX() * CELL_SIZE;
@@ -114,7 +134,7 @@ public abstract class LevelPanel extends JPanel {
             }
         }
         
-        // Dibujar fogatas
+        // Draw campfires
         for (Campfire fire : board.getCampfires()) {
             if (fire.exists()) {
                 int x = fire.getPosition().getX() * CELL_SIZE;
@@ -128,6 +148,10 @@ public abstract class LevelPanel extends JPanel {
         }
     }
     
+    /**
+     * Draws the game board walls and floor tiles.
+     * @param g the graphics context
+     */
     protected void drawBoard(Graphics g) {
         Board board = game.getBoard();
         
@@ -146,6 +170,12 @@ public abstract class LevelPanel extends JPanel {
         }
     }
     
+    /**
+     * Draws a single floor tile at the specified screen position.
+     * @param g the graphics context
+     * @param x screen x coordinate (in pixels)
+     * @param y screen y coordinate (in pixels)
+     */
     protected void drawFloor(Graphics g, int x, int y) {
         Image floor = images.get("floor");
         if (floor != null) {
@@ -153,6 +183,12 @@ public abstract class LevelPanel extends JPanel {
         }
     }
     
+    /**
+     * Draws a single wall tile at the specified screen position.
+     * @param g the graphics context
+     * @param x screen x coordinate (in pixels)
+     * @param y screen y coordinate (in pixels)
+     */
     protected void drawWall(Graphics g, int x, int y) {
         Image wall = images.get("wall");
         if (wall != null) {
@@ -160,6 +196,10 @@ public abstract class LevelPanel extends JPanel {
         }
     }
     
+    /**
+     * Draws all ice blocks currently on the board.
+     * @param g the graphics context
+     */
     protected void drawIceBlocks(Graphics g) {
         Image ice = images.get("iceBlock");
         if (ice == null) return;
@@ -173,6 +213,10 @@ public abstract class LevelPanel extends JPanel {
         }
     }
     
+    /**
+     * Draws all fruits on the board.
+     * @param g the graphics context
+     */
     protected void drawFruits(Graphics g) {
         for (Fruit fruit : game.getFruits()) {
             if (fruit.isCollected()) {
@@ -190,6 +234,10 @@ public abstract class LevelPanel extends JPanel {
         }
     }
     
+    /**
+     * Draws the player's ice cream character.
+     * @param g the graphics context
+     */
     protected void drawPlayer(Graphics g) {
         IceCream player = game.getPlayer();
         if (!player.isAlive()) {
@@ -207,8 +255,16 @@ public abstract class LevelPanel extends JPanel {
         }
     }
     
+    /**
+     * Abstract method to draw enemies.
+     * @param g the graphics context
+     */
     protected abstract void drawEnemies(Graphics g);
     
+    /**
+     * Draws a pause overlay when the game is paused.
+     * @param g the graphics context
+     */
     protected void drawPausedMessage(Graphics g) {
         g.setColor(new Color(0, 0, 0, 180));
         g.fillRect(0, 0, getWidth(), getHeight());

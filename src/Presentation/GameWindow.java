@@ -6,7 +6,13 @@ import java.awt.*;
 import java.awt.event.*;
 
 /**
- * Ventana principal del juego
+ * Main game window that contains the gameplay interface.
+ * This window manages:
+ * - The game level display
+ * - HUD information (score, time, level)
+ * - Game controls and keyboard input
+ * - Game timers for updates and rendering
+ * - Win/loss dialogs and level progression
  */
 public class GameWindow extends JFrame {
     
@@ -22,6 +28,11 @@ public class GameWindow extends JFrame {
     private Timer gameTimer;
     private Timer updateTimer;
     
+    /**
+     * Creates a new game window for the specified game and level.
+     * @param game the Game instance containing all game logic
+     * @param levelNumber the current level number
+     */
     public GameWindow(Game game, int levelNumber) {
         this.game = game;
         this.levelNumber = levelNumber;
@@ -30,6 +41,9 @@ public class GameWindow extends JFrame {
         startGameTimers();
     }
     
+    /**
+     * Sets up all visual elements of the game window.
+     */
     private void prepareElements() {
         setResizable(false);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -43,6 +57,7 @@ public class GameWindow extends JFrame {
         centerPanel.setBackground(Color.DARK_GRAY);
         GridBagConstraints gbc = new GridBagConstraints();
         
+        // Create the appropriate level panel based on level number
         switch(levelNumber) {
             case 1:
                 levelPanel = new Level1Panel(game);
@@ -50,7 +65,7 @@ public class GameWindow extends JFrame {
             case 2:
                 levelPanel = new Level2Panel(game);
                 break;
-            case 3: //e
+            case 3:
                 levelPanel = new Level3Panel(game);
                 break;
             default:
@@ -69,6 +84,10 @@ public class GameWindow extends JFrame {
         setLocationRelativeTo(null);
     }
     
+    /**
+     * Creates the information panel (HUD) displayed at the top of the window.
+     * @return the configured information panel
+     */
     private JPanel createInfoPanel() {
         JPanel panel = new JPanel(new GridLayout(1, 4));
         panel.setBackground(new Color(50, 50, 100));
@@ -100,6 +119,10 @@ public class GameWindow extends JFrame {
         return panel;
     }
     
+    /**
+     * Creates the controls panel displayed at the bottom of the window.
+     * @return the configured controls panel
+     */
     private JPanel createControlsPanel() {
         JPanel panel = new JPanel();
         panel.setBackground(Color.LIGHT_GRAY);
@@ -114,6 +137,9 @@ public class GameWindow extends JFrame {
         return panel;
     }
     
+    /**
+     * Configures the behavior of all interactive elements and keyboard controls.
+     */
     private void prepareActions() {
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -148,6 +174,7 @@ public class GameWindow extends JFrame {
             public void keyPressed(KeyEvent e) {
                 int key = e.getKeyCode();
                 
+                // Movement controls (arrow keys or WASD)
                 if (key == KeyEvent.VK_UP || key == KeyEvent.VK_W) {
                     game.movePlayer("UP");
                 } else if (key == KeyEvent.VK_DOWN || key == KeyEvent.VK_S) {
@@ -157,9 +184,11 @@ public class GameWindow extends JFrame {
                 } else if (key == KeyEvent.VK_RIGHT || key == KeyEvent.VK_D) {
                     game.movePlayer("RIGHT");
                 } 
+                // Ice block creation/destruction
                 else if (key == KeyEvent.VK_SPACE) {
                     game.handleIceBlock();
                 } 
+                // Pause toggle
                 else if (key == KeyEvent.VK_P || key == KeyEvent.VK_ESCAPE) {
                     game.togglePause();
                     if (game.isPaused()) {
@@ -170,6 +199,7 @@ public class GameWindow extends JFrame {
                         btnPause.setBackground(new Color(255, 165, 0));
                     }
                 } 
+                // Restart level
                 else if (key == KeyEvent.VK_R) {
                     int confirm = JOptionPane.showConfirmDialog(GameWindow.this,
                         "Restart the level? Current progress will be lost.",
@@ -187,6 +217,9 @@ public class GameWindow extends JFrame {
         levelPanel.requestFocusInWindow();
     }
     
+    /**
+     * Starts the game timers for rendering and logic updates.
+     */
     private void startGameTimers() {
         gameTimer = new Timer(16, e -> {
             levelPanel.repaint();
@@ -199,6 +232,9 @@ public class GameWindow extends JFrame {
         updateTimer.start();
     }
     
+    /**
+     * Updates the HUD labels with current game information.
+     */
     private void updateLabels() {
         lblScore.setText("Score: " + game.getPlayer().getScore());
         
@@ -214,6 +250,9 @@ public class GameWindow extends JFrame {
         }
     }
     
+    /**
+     * Checks if the game has ended and shows appropriate dialogs.
+     */
     private void checkGameStatus() {
         if (game.isGameWon()) {
             stopTimers();
@@ -224,6 +263,9 @@ public class GameWindow extends JFrame {
         }
     }
     
+    /**
+     * Shows the victory dialog when the player completes a level.
+     */
     private void showVictoryDialog() {
         int option = JOptionPane.showOptionDialog(this,
             "Congratulations! You completed level " + levelNumber + "!\n" +
@@ -237,7 +279,7 @@ public class GameWindow extends JFrame {
             "Next level");
         
         if (option == 0) {
-            if (levelNumber < 3) { //4
+            if (levelNumber < 3) {
                 Game newGame = new Game(levelNumber + 1, game.getPlayer().getFlavor());
                 GameWindow newWindow = new GameWindow(newGame, levelNumber + 1);
                 newWindow.setVisible(true);
@@ -261,6 +303,9 @@ public class GameWindow extends JFrame {
         }
     }
     
+    /**
+     * Shows the defeat dialog when the player loses.
+     */
     private void showDefeatDialog() {
         int option = JOptionPane.showConfirmDialog(this,
             "You've been defeated\n" +
@@ -278,6 +323,9 @@ public class GameWindow extends JFrame {
         }
     }
     
+    /**
+     * Restarts the current level from the beginning.
+     */
     private void restartLevel() {
         stopTimers();
         game.restart();
@@ -289,6 +337,9 @@ public class GameWindow extends JFrame {
         levelPanel.requestFocusInWindow();
     }
     
+    /**
+     * Stops both game timers.
+     */
     private void stopTimers() {
         if (gameTimer != null && gameTimer.isRunning()) {
             gameTimer.stop();

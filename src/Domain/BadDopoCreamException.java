@@ -1,19 +1,22 @@
 package Domain;
 
 /**
- * Clase de excepciones del juego Bad Dopo-Cream
+ * Custom exception class for Bad Dopo-Cream game errors.
  */
 public class BadDopoCreamException extends Exception {
     
     /**
-     * Constructor que recibe un mensaje de error
+     * Creates a new exception with a descriptive error message.
+     * @param message a description of what went wrong
      */
     public BadDopoCreamException(String message) {
         super(message);
     }
     
     /**
-     * Constructor que recibe un mensaje y la causa original del error
+     * Creates a new exception with a message and the original cause.
+     * @param message a description of what went wrong
+     * @param cause the original exception that caused this error
      */
     public BadDopoCreamException(String message, Throwable cause) {
         super(message, cause);

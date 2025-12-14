@@ -7,7 +7,8 @@ import java.awt.event.*;
 import javax.imageio.ImageIO;
 
 /**
- * Menú de selección de nivel
+ * Level selection menu for the game.
+ * Displays all available levels with their difficulty and content information.
  */
 public class LevelSelectionMenu extends JFrame {
     
@@ -15,12 +16,19 @@ public class LevelSelectionMenu extends JFrame {
     private JButton btnBack;
     private Image backgroundImage;
     
+    /**
+     * Creates the level selection menu with the player's chosen ice cream flavor.
+     * @param iceCreamFlavor the flavor selected in the previous menu
+     */
     public LevelSelectionMenu(String iceCreamFlavor) {
         this.iceCreamFlavor = iceCreamFlavor;
         prepareElements();
         prepareActions();
     }
     
+    /**
+     * Sets up all visual elements of the level selection menu.
+     */
     private void prepareElements() {
         setTitle("Select Level");
         setSize(900, 700);
@@ -54,6 +62,7 @@ public class LevelSelectionMenu extends JFrame {
         };
         mainPanel.setLayout(null);
         
+        // Title
         JLabel title = new JLabel("Choose the level");
         title.setFont(new Font("Arial", Font.BOLD, 48));
         title.setForeground(Color.WHITE);
@@ -61,6 +70,7 @@ public class LevelSelectionMenu extends JFrame {
         title.setHorizontalAlignment(SwingConstants.CENTER);
         mainPanel.add(title);
         
+        // Level panels with descriptions
         JPanel level1Panel = createLevelPanel(
             "Level 1", 
             "EASY",
@@ -77,7 +87,7 @@ public class LevelSelectionMenu extends JFrame {
         );
         mainPanel.add(level2Panel);
         
-        JPanel level3Panel = createLevelPanel(//e
+        JPanel level3Panel = createLevelPanel(
             "Level 3", 
             "HARD",
             "1 Squid • 8 Pineapples • 8 Cherries",
@@ -91,6 +101,15 @@ public class LevelSelectionMenu extends JFrame {
         add(mainPanel);
     }
     
+    /**
+     * Creates a panel representing a single level option.
+     * @param levelName the display name of the level: "Level 1", "Level 2", "Level 3"
+     * @param difficulty difficulty label: "EASY", "INTERMEDIATE" or "HARD"
+     * @param description text describing the level's enemies and fruits
+     * @param x horizontal position
+     * @param y vertical position
+     * @return a configured level selection panel
+     */
     private JPanel createLevelPanel(String levelName, String difficulty, 
                                     String description, int x, int y) {
         JPanel panel = new JPanel() {
@@ -146,6 +165,10 @@ public class LevelSelectionMenu extends JFrame {
         return panel;
     }
     
+    /**
+     * Creates a back button with an image.
+     * @return a configured back button
+     */
     private JButton createBackButton() {
         Image backButtonImage = null;
         try {
@@ -167,6 +190,9 @@ public class LevelSelectionMenu extends JFrame {
         return button;
     }
     
+    /**
+     * Configures the behavior of all interactive elements.
+     */
     private void prepareActions() {
         JPanel mainPanel = (JPanel) getContentPane().getComponent(0);
         JPanel level1Panel = (JPanel) mainPanel.getComponent(1);
@@ -207,7 +233,7 @@ public class LevelSelectionMenu extends JFrame {
             }
         });
         
-        level3Panel.addMouseListener(new MouseAdapter() { //e
+        level3Panel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 startLevel(3);
@@ -232,7 +258,8 @@ public class LevelSelectionMenu extends JFrame {
     }
     
     /**
-     * Inicia el nivel seleccionado
+     * Starts the selected level with the player's chosen ice cream flavor.
+     * @param levelNumber the level number to start: 1, 2 or 3
      */
     private void startLevel(int levelNumber) {
         Game game = new Game(levelNumber, iceCreamFlavor);
