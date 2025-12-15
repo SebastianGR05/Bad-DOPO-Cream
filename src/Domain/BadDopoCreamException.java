@@ -10,7 +10,7 @@ public class BadDopoCreamException extends Exception {
      * @param message a description of what went wrong
      */
     public BadDopoCreamException(String message) {
-        super(message);
+        super(message); 
     }
     
     /**
